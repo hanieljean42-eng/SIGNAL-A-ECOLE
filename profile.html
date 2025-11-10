@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-card, .reports-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+            margin: 0 auto 15px;
+        }
+
+        .profile-info {
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .reports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .report-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .report-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .report-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .report-meta {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .report-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-new {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .status-in-progress {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .status-resolved {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-archived {
+            background: #6c757d;
+            color: white;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .priority-faible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .priority-moyen {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-eleve {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-critique {
+            background: #dc3545;
+            color: white;
+        }
+
+        .report-description {
+            margin-top: 10px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .report-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .anonymous-badge {
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state img {
+            width: 100px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .current {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .report-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Retour à l'accueil</a>
+        
+        <div class="header">
+            <h1>👤 Mon Profil</h1>
+            <p>Gérez votre compte et suivez vos signalements</p>
+        </div>
+
+        <div class="profile-grid">
+            <!-- Profil utilisateur -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">👤</div>
+                    <h2 id="userName">Chargement...</h2>
+                    <p id="userSchool" style="color: #666;"></p>
+                </div>
+
+                <div class="profile-info" id="profileInfo">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Chargement du profil...</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="editProfile()">✏️ Modifier le profil</button>
+                    <button class="btn btn-danger" onclick="logout()" style="margin-top: 10px;">🚪 Déconnexion</button>
+                </div>
+            </div>
+
+            <!-- Signalements -->
+            <div class="reports-card">
+                <div class="reports-header">
+                    <h2>📋 Mes signalements</h2>
+                    <a href="/" class="btn btn-success">➕ Nouveau signalement</a>
+                </div>
+
+                <div class="stats-row" id="statsRow">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalReports">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="newReports">0</div>
+                        <div class="stat-label">Nouveaux</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="inProgressReports">0</div>
+                        <div class="stat-label">En cours</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="resolvedReports">0</div>
+                        <div class="stat-label">Résolus</div>
+                    </div>
+                </div>
+
+                <div id="reportsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Chargement des signalements...</p>
+                    </div>
+                </div>
+
+                <div id="pagination" class="pagination" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentPage = 1;
+        const reportsPerPage = 5;
+
+        // Vérifier l'authentification au chargement
+        async function checkAuthentication() {
+            const token = localStorage.getItem('userToken');
+            const userData = localStorage.getItem('userData');
+
+            if (!token || !userData) {
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/users/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('userData');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                currentUser = JSON.parse(userData);
+                loadProfile();
+                loadReports();
+            } catch (error) {
+                console.error('Erreur lors de la vérification:', error);
+                window.location.href = '/login';
+            }
+        }
+
+        // Charger le profil utilisateur
+        async function loadProfile() {
+            try {
+                const token = localStorage.getItem('userToken');
+                const response = await fetch('/api/users/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const user = result.user;
+                    
+                    // Mettre à jour l'interface
+                    document.getElementById('userName').textContent = user.full_name;
+                    document.getElementById('userSchool').textContent = user.school_name;
+                    
+                    // Avatar avec initiales
+                    const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('profileAvatar').textContent = initials;
+
+                    // Informations du profil
+                    const profileInfo = document.getElementById('profileInfo');
+                    profileInfo.innerHTML = `
+                        <div class="info-item">
+                            <span class="info-label">Nom d'utilisateur</span>
+                            <span class="info-value">${user.username}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">${user.email}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Type</span>
+                            <span class="info-value">${getUserTypeLabel(user.user_type)}</span>
+                        </div>
+                        ${user.class_level ? `
+                        <div class="info-item">
+                            <span class="info-label">Classe/Niveau</span>
+                            <span class="info-value">${user.class_level}</span>
+                        </div>
+                        ` : ''}
+                        ${user.phone ? `
+                        <div class="info-item">
+                            <span class="info-label">Téléphone</span>
+                            <span class="info-value">${user.phone}</span>
+                        </div>
+                        ` : ''}
+                        <div class="info-item">
+                            <span class="info-label">Membre depuis</span>
+                            <span class="info-value">${new Date(user.created_at).toLocaleDateString('fr-FR')}</span>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement du profil:', error);
+            }
+        }
+
+        // Charger les signalements de l'utilisateur
+        async function loadReports(page = 1) {
+            try {
+                const token = localStorage.getItem('userToken');
+                const response = await fetch(`/api/users/my-reports?page=${page}&limit=${reportsPerPage}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayReports(result.reports);
+                    updateStats(result.reports, result.pagination.total);
+                    updatePagination(result.pagination);
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des signalements:', error);
+                document.getElementById('reportsList').innerHTML = `
+                    <div class="empty-state">
+                        <p>❌ Erreur lors du chargement des signalements</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Afficher les signalements
+        function displayReports(reports) {
+            const reportsList = document.getElementById('reportsList');
+
+            if (reports.length === 0) {
+                reportsList.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3em; margin-bottom: 15px;">📝</div>
+                        <h3>Aucun signalement</h3>
+                        <p>Vous n'avez pas encore fait de signalement.</p>
+                        <a href="/" class="btn" style="margin-top: 15px;">Faire un signalement</a>
+                    </div>
+                `;
+                return;
+            }
+
+            reportsList.innerHTML = reports.map(report => {
+                const statusClass = `status-${report.status}`;
+                const priorityClass = `priority-${report.urgency}`;
+                
+                let statusText = 'Nouveau';
+                let statusIcon = '🆕';
+                
+                switch(report.status) {
+                    case 'in-progress':
+                        statusText = 'En traitement';
+                        statusIcon = '⏳';
+                        break;
+                    case 'resolved':
+                        statusText = 'Résolu';
+                        statusIcon = '✅';
+                        break;
+                    case 'archived':
+                        statusText = 'Archivé';
+                        statusIcon = '📁';
+                        break;
+                }
+
+                return `
+                    <div class="report-item">
+                        <div class="report-header">
+                            <div>
+                                <div class="report-title">${statusIcon} ${report.title}</div>
+                                <div class="report-meta">
+                                    ${report.category} • ${new Date(report.created_at).toLocaleDateString('fr-FR')}
+                                    ${report.location ? ` • ${report.location}` : ''}
+                                </div>
+                            </div>
+                            <div>
+                                <span class="report-status ${statusClass}">${statusText}</span>
+                                <span class="priority-badge ${priorityClass}">${report.urgency.toUpperCase()}</span>
+                                ${report.is_anonymous ? '<span class="anonymous-badge">🎭 Anonyme</span>' : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="report-description">
+                            ${report.message.length > 200 ? report.message.substring(0, 200) + '...' : report.message}
+                        </div>
+                        
+                        <div class="report-actions">
+                            <button class="btn" onclick="viewReport('${report.id}')" style="padding: 8px 15px; font-size: 0.9em;">
+                                👁️ Voir détails
+                            </button>
+                            ${report.response_count > 0 ? `
+                            <span style="color: #28a745; font-size: 0.9em; display: flex; align-items: center;">
+                                💬 ${report.response_count} réponse(s)
+                            </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats(reports, total) {
+            const stats = {
+                total: total,
+                new: 0,
+                inProgress: 0,
+                resolved: 0
+            };
+
+            // Calculer les stats à partir de tous les signalements (pas seulement la page actuelle)
+            // Pour une vraie application, ces stats devraient venir de l'API
+            document.getElementById('totalReports').textContent = stats.total;
+            document.getElementById('newReports').textContent = reports.filter(r => r.status === 'new').length;
+            document.getElementById('inProgressReports').textContent = reports.filter(r => r.status === 'in-progress').length;
+            document.getElementById('resolvedReports').textContent = reports.filter(r => r.status === 'resolved').length;
+        }
+
+        // Mettre à jour la pagination
+        function updatePagination(pagination) {
+            const paginationDiv = document.getElementById('pagination');
+            
+            if (pagination.totalPages <= 1) {
+                paginationDiv.style.display = 'none';
+                return;
+            }
+
+            paginationDiv.style.display = 'flex';
+            
+            let paginationHTML = '';
+            
+            // Bouton précédent
+            paginationHTML += `
+                <button onclick="changePage(${pagination.page - 1})" ${pagination.page <= 1 ? 'disabled' : ''}>
+                    ← Précédent
+                </button>
+            `;
+            
+            // Numéros de page
+            for (let i = 1; i <= pagination.totalPages; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" ${i === pagination.page ? 'class="current"' : ''}>
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            // Bouton suivant
+            paginationHTML += `
+                <button onclick="changePage(${pagination.page + 1})" ${pagination.page >= pagination.totalPages ? 'disabled' : ''}>
+                    Suivant →
+                </button>
+            `;
+            
+            paginationDiv.innerHTML = paginationHTML;
+        }
+
+        // Changer de page
+        function changePage(page) {
+            currentPage = page;
+            loadReports(page);
+        }
+
+        // Voir les détails d'un signalement
+        function viewReport(reportId) {
+            // Rediriger vers la page de suivi avec le code
+            window.location.href = `/?track=${reportId}`;
+        }
+
+        // Obtenir le libellé du type d'utilisateur
+        function getUserTypeLabel(userType) {
+            const labels = {
+                'eleve': '👨‍🎓 Élève',
+                'professeur': '👨‍🏫 Professeur',
+                'parent': '👪 Parent',
+                'personnel': '🏢 Personnel administratif',
+                'autre': '👤 Autre'
+            };
+            return labels[userType] || userType;
+        }
+
+        // Modifier le profil (à implémenter)
+        function editProfile() {
+            alert('Fonctionnalité de modification du profil à venir !');
+        }
+
+        // Déconnexion
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('userData');
+                window.location.href = '/';
+            }
+        }
+
+        // Initialisation
+        checkAuthentication();
+    </script>
+</body>
+</html>

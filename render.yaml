@@ -1,0 +1,29 @@
+services:
+  # Service Web principal
+  - type: web
+    name: speakfree
+    env: node
+    plan: free
+    buildCommand: npm install && node scripts/init-database.js
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: ./database/speakfree.db
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+    disk:
+      name: speakfree-data
+      mountPath: /opt/render/project/src/database
+      sizeGB: 1

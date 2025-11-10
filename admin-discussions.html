@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Discussions - Admin SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .nav-links a {
+            padding: 10px 20px;
+            background: #f0f4ff;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .discussions-list {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .discussion-item {
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .discussion-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .discussion-item.unread {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .discussion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .report-code {
+            font-family: monospace;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .unread-badge {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+
+        .discussion-preview {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .chat-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-modal.show {
+            display: flex;
+        }
+
+        .chat-window {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+        }
+
+        .message.user {
+            justify-content: flex-start;
+        }
+
+        .message.admin {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+        }
+
+        .message.user .message-bubble {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .message.admin .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+            background: #f8f9fa;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .ai-control {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-toggle-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .ai-toggle-btn.enabled {
+            background: #28a745;
+            color: white;
+        }
+
+        .ai-toggle-btn.disabled {
+            background: #dc3545;
+            color: white;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .ai-indicator.active {
+            background: #28a745;
+            box-shadow: 0 0 8px #28a745;
+        }
+
+        .ai-indicator.paused {
+            background: #dc3545;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filters select {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💬 Gestion des Discussions</h1>
+        <p>Communiquez avec les utilisateurs de manière sécurisée</p>
+        
+        <div class="nav-links">
+            <a href="/admin">← Tableau de bord</a>
+            <a href="/admin-reports">📢 Signalements</a>
+            <a href="#" onclick="logout()">🚪 Déconnexion</a>
+        </div>
+    </div>
+
+    <div class="discussions-list">
+        <div class="filters">
+            <select id="statusFilter" onchange="loadDiscussions()">
+                <option value="all">Toutes les discussions</option>
+                <option value="unread">Non lues</option>
+                <option value="active">Actives</option>
+                <option value="closed">Fermées</option>
+            </select>
+        </div>
+
+        <div id="discussionsList">
+            <div style="text-align: center; padding: 40px; color: #666;">
+                ⏳ Chargement des discussions...
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Chat -->
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-window">
+            <div class="chat-header">
+                <div>
+                    <h3 id="chatTitle">Discussion</h3>
+                    <small id="chatSubtitle"></small>
+                </div>
+                <button class="close-btn" onclick="closeChatModal()">×</button>
+            </div>
+
+            <div class="messages-area" id="messagesArea"></div>
+
+            <div class="ai-control">
+                <div class="ai-status">
+                    <span class="ai-indicator" id="aiIndicator"></span>
+                    <span id="aiStatusText">Chargement...</span>
+                </div>
+                <button class="ai-toggle-btn" id="aiToggleBtn" onclick="toggleAI()">
+                    Activer IA
+                </button>
+            </div>
+
+            <div class="input-area">
+                <div class="input-group">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="💬 Écrivez votre réponse ici..." 
+                        rows="3"
+                        onkeypress="handleKeyPress(event)"
+                        style="font-size: 1.05em;"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendAdminMessage()" id="sendBtn">
+                        📤 Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReportCode = null;
+        let currentAIStatus = true;
+
+        // Vérifier authentification
+        window.onload = function() {
+            const adminData = localStorage.getItem('adminData');
+            if (!adminData) {
+                window.location.href = '/login';
+                return;
+            }
+            loadDiscussions();
+        };
+
+        // Charger les discussions
+        async function loadDiscussions() {
+            const token = localStorage.getItem('adminToken');
+            const filter = document.getElementById('statusFilter').value;
+
+            try {
+                const response = await fetch(`/api/discussions/admin/discussions?filter=${filter}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayDiscussions(result.discussions);
+                } else {
+                    console.error('Erreur:', result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Afficher les discussions
+        function displayDiscussions(discussions) {
+            const container = document.getElementById('discussionsList');
+
+            if (discussions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        📭 Aucune discussion
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            discussions.forEach(disc => {
+                const unreadClass = disc.unread_count > 0 ? 'unread' : '';
+                html += `
+                    <div class="discussion-item ${unreadClass}">
+                        <div class="discussion-header">
+                            <span class="report-code" onclick="openChat('${disc.report_code}')" style="cursor: pointer;">${disc.report_code}</span>
+                            <div>
+                                ${disc.unread_count > 0 ? `<span class="unread-badge">${disc.unread_count} nouveau(x)</span>` : ''}
+                                <button class="delete-btn" onclick="deleteDiscussion('${disc.report_code}', event)">🗑️ Supprimer</button>
+                            </div>
+                        </div>
+                        <div class="discussion-preview" onclick="openChat('${disc.report_code}')" style="cursor: pointer;">
+                            📝 ${disc.report_title || 'Signalement'}
+                        </div>
+                        <div style="font-size: 0.85em; color: #999; margin-top: 5px;" onclick="openChat('${disc.report_code}')" style="cursor: pointer;">
+                            Dernière activité: ${new Date(disc.last_activity).toLocaleString('fr-FR')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Ouvrir le chat
+        async function openChat(reportCode) {
+            currentReportCode = reportCode;
+            document.getElementById('chatTitle').textContent = reportCode;
+            document.getElementById('chatModal').classList.add('show');
+            
+            await loadMessages();
+            await loadAIStatus();
+        }
+
+        // Fermer le chat
+        function closeChatModal() {
+            document.getElementById('chatModal').classList.remove('show');
+            loadDiscussions(); // Recharger la liste
+        }
+
+        // Charger les messages
+        async function loadMessages() {
+            const token = localStorage.getItem('adminToken');
+
+            try {
+                const response = await fetch(`/api/discussions/${currentReportCode}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                const messagesArea = document.getElementById('messagesArea');
+                
+                if (result.success && result.messages.length > 0) {
+                    messagesArea.innerHTML = '';
+                    result.messages.forEach(msg => displayMessage(msg));
+                } else {
+                    messagesArea.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            💬 Aucun message
+                        </div>
+                    `;
+                }
+                
+                scrollToBottom();
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Afficher un message
+        function displayMessage(message) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.sender_type === 'admin' ? 'admin' : 'user'}`;
+            
+            const time = new Date(message.created_at).toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let attachmentHTML = '';
+            if (message.attachment) {
+                const attachment = JSON.parse(message.attachment);
+                attachmentHTML = `
+                    <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                        📎 <a href="${attachment.url}" target="_blank" style="color: inherit;">${attachment.name}</a>
+                    </div>
+                `;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div style="font-weight: bold; margin-bottom: 5px; font-size: 0.9em;">
+                        ${message.sender_type === 'admin' ? '🏫 Vous' : '👤 Utilisateur'}
+                    </div>
+                    <div>${escapeHtml(message.message)}</div>
+                    ${attachmentHTML}
+                    <div style="font-size: 0.75em; opacity: 0.7; margin-top: 5px;">${time}</div>
+                </div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+        }
+
+        // Envoyer un message (admin)
+        async function sendAdminMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            const token = localStorage.getItem('adminToken');
+            const sendBtn = document.getElementById('sendBtn');
+
+            if (!message) return;
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳ Envoi...';
+
+            try {
+                const response = await fetch('/api/discussions/send-admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        reportCode: currentReportCode,
+                        message: message
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    input.value = '';
+                    loadMessages();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur d\'envoi');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Envoyer';
+            }
+        }
+
+        // Enter pour envoyer
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendAdminMessage();
+            }
+        }
+
+        // Scroll vers le bas
+        function scrollToBottom() {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Supprimer une discussion
+        async function deleteDiscussion(reportCode, event) {
+            event.stopPropagation();
+            
+            if (!confirm(`Voulez-vous vraiment supprimer cette discussion ${reportCode} ?\n\nCette action est irréversible et supprimera tous les messages.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('adminToken');
+
+            try {
+                const response = await fetch(`/api/discussions/${reportCode}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Discussion supprimée avec succès');
+                    loadDiscussions();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la suppression');
+            }
+        }
+
+        // Charger le statut de l'IA
+        async function loadAIStatus() {
+            const token = localStorage.getItem('adminToken');
+
+            try {
+                const response = await fetch(`/api/discussions/${currentReportCode}/ai-status`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    currentAIStatus = result.ai_enabled;
+                    updateAIUI(result);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Mettre à jour l'interface de l'IA
+        function updateAIUI(data) {
+            const indicator = document.getElementById('aiIndicator');
+            const statusText = document.getElementById('aiStatusText');
+            const toggleBtn = document.getElementById('aiToggleBtn');
+
+            if (data.ai_enabled) {
+                indicator.className = 'ai-indicator active';
+                statusText.textContent = '🤖 IA Haniel active';
+                toggleBtn.className = 'ai-toggle-btn enabled';
+                toggleBtn.textContent = '✅ IA Activée';
+            } else {
+                indicator.className = 'ai-indicator paused';
+                const pausedBy = data.ai_paused_by === 'school' ? 'école' : 'admin';
+                statusText.textContent = `⏸️ IA en pause (par ${pausedBy})`;
+                toggleBtn.className = 'ai-toggle-btn disabled';
+                toggleBtn.textContent = '▶️ Activer l\'IA';
+            }
+        }
+
+        // Activer/Désactiver l'IA
+        async function toggleAI() {
+            const token = localStorage.getItem('adminToken');
+            const newStatus = !currentAIStatus;
+
+            try {
+                const response = await fetch(`/api/discussions/${currentReportCode}/toggle-ai`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        enabled: newStatus
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    currentAIStatus = newStatus;
+                    await loadAIStatus();
+                    alert(result.message);
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors du changement de statut de l\'IA');
+            }
+        }
+
+        // Déconnexion
+        function logout() {
+            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+                localStorage.removeItem('adminData');
+                localStorage.removeItem('adminToken');
+                window.location.href = '/login';
+            }
+        }
+
+        // Rafraîchir automatiquement
+        setInterval(() => {
+            if (!document.getElementById('chatModal').classList.contains('show')) {
+                loadDiscussions();
+            } else if (currentReportCode) {
+                loadMessages();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

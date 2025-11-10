@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À Propos - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .profile {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            margin: 0 auto 30px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .profile h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .profile .subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .info-item {
+            padding: 20px;
+            background: #f5f7fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .info-item span {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .section-title {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .project-desc {
+            background: #e7f3ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .project-desc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .project-desc p {
+            color: #333;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f5f7fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            font-size: 1.05em;
+        }
+
+        .features-list li::before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+
+        .quote {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            font-style: italic;
+            font-size: 1.2em;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 25px;
+            background: #f5f7fa;
+            border-radius: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            color: #667eea;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 30px 20px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .profile h2 {
+                font-size: 1.8em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 À Propos de SpeakFree</h1>
+            <p style="font-size: 1.2em; opacity: 0.95;">Plateforme de Signalement Anonyme pour les Établissements Scolaires</p>
+        </div>
+
+        <!-- Mission -->
+        <div class="card">
+            <div class="profile">
+                <div class="profile-img">🛡️</div>
+                <h2>Notre Mission</h2>
+                <p class="subtitle">Créer des environnements scolaires plus sûrs et transparents</p>
+            </div>
+        </div>
+
+        <!-- Projet -->
+        <div class="card">
+            <h2 class="section-title">🎯 Le Projet SpeakFree</h2>
+            
+            <div class="project-desc">
+                <h3>Mission</h3>
+                <p>
+                    SpeakFree est une plateforme innovante conçue pour permettre aux élèves, professeurs et parents 
+                    de signaler de manière <strong>anonyme et sécurisée</strong> tout incident ou problème au sein 
+                    de leur établissement scolaire. L'objectif est de créer un environnement scolaire plus sûr et 
+                    plus transparent en facilitant la communication entre les différents acteurs de l'éducation.
+                </p>
+            </div>
+
+            <div class="quote">
+                "Donner une voix à tous ceux qui en ont besoin, tout en protégeant leur identité et en créant 
+                un environnement scolaire plus sûr pour tous."
+            </div>
+
+            <h3 style="color: #667eea; margin: 30px 0 20px 0; font-size: 1.5em;">✨ Fonctionnalités Principales</h3>
+            <ul class="features-list">
+                <li>Signalements 100% anonymes et sécurisés</li>
+                <li>Système de validation par super-administrateur pour les inscriptions d'écoles</li>
+                <li>Tableau de bord complet pour les administrateurs scolaires</li>
+                <li>Gestion des utilisateurs (élèves, professeurs, parents)</li>
+                <li>Suivi en temps réel des signalements</li>
+                <li>Interface moderne et intuitive</li>
+                <li>Système de notifications et alertes</li>
+                <li>Protection des données personnelles</li>
+            </ul>
+        </div>
+
+        <!-- Développeur -->
+        <div class="card">
+            <h2 class="section-title">👨‍💻 Développeur</h2>
+            <div style="text-align: center; padding: 20px;">
+                <h3 style="color: #667eea; font-size: 2em; margin-bottom: 15px;">Haniel DJEBLE</h3>
+                <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">Développeur Full-Stack</p>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>📧 Email</strong>
+                        <span>hanieljean42@gmail.com</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>📱 Téléphone</strong>
+                        <span>+225 01 50 25 24 67</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>🔧 Spécialité</strong>
+                        <span>Applications Web Sécurisées</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="card" style="text-align: center;">
+            <h2 class="section-title">🚀 Commencer avec SpeakFree</h2>
+            <p style="font-size: 1.1em; color: #666; margin: 20px 0;">
+                Découvrez comment SpeakFree peut améliorer la sécurité de votre établissement
+            </p>
+            <div style="margin: 30px 0;">
+                <a href="/register-school" class="btn">🏫 Inscrire mon École</a>
+                <a href="/report" class="btn" style="background: #28a745;">📢 Faire un Signalement</a>
+                <a href="/" class="btn" style="background: #6c757d;">🏠 Retour à l'Accueil</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p style="font-size: 1.1em; margin-bottom: 10px;">
+                <strong>SpeakFree</strong> - Plateforme de Signalement Anonyme
+            </p>
+            <p style="font-size: 0.9em; opacity: 0.9;">
+                Développé par Haniel DJEBLE © 2025
+            </p>
+        </div>
+    </div>
+</body>
+</html>

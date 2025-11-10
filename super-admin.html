@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        /* LOGIN */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .login-box h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .error-msg {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        /* DASHBOARD */
+        .dashboard {
+            display: none;
+        }
+
+        .topbar {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h2 {
+            color: #667eea;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: #f5f7fa;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filters select, .filters input {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .filters .btn {
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        .request-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .request-header h3 {
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .request-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            font-size: 0.95em;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-approve {
+            background: #28a745;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+        }
+
+        .btn-view {
+            background: #667eea;
+        }
+
+        .btn-view:hover {
+            background: #5568d3;
+        }
+
+        .actions .btn {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 0.95em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+            min-height: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filters select, .filters input, .filters .btn {
+                width: 100%;
+            }
+
+            .request-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="loginSection" class="login-container">
+        <div class="login-box">
+            <h1>🔧 Super Admin</h1>
+            <div id="loginError" class="error-msg"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Code d'Accès</label>
+                    <input type="password" id="accessCode" placeholder="Entrez le code" autofocus required>
+                </div>
+                <button type="submit" class="btn">🔓 Connexion</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard">
+        <div class="topbar">
+            <h2>📋 Gestion des Demandes</h2>
+            <button class="btn-logout" onclick="logout()">🚪 Déconnexion</button>
+        </div>
+
+        <div class="container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('schools')">🏫 Demandes d'École</button>
+                <button class="tab" onclick="switchTab('admins')">👤 Demandes d'Admin</button>
+                <button class="tab" onclick="switchTab('allreports')">📋 Tous les Signalements</button>
+                <button class="tab" onclick="switchTab('identity')">📬 Demandes de Révélation</button>
+                <button class="tab" onclick="switchTab('reports')">⚠️ Signalements Suspects</button>
+            </div>
+
+            <!-- ÉCOLES -->
+            <div id="schoolsTab" class="tab-content active">
+                <div class="filters">
+                    <select id="schoolStatusFilter" onchange="filterSchoolRequests()">
+                        <option value="">Tous les statuts</option>
+                        <option value="pending">En attente</option>
+                        <option value="approved">Approuvées</option>
+                        <option value="rejected">Rejetées</option>
+                    </select>
+                    <input type="text" id="schoolSearchFilter" placeholder="Rechercher..." onkeyup="filterSchoolRequests()">
+                    <button class="btn" onclick="loadSchoolRequests()">🔄 Actualiser</button>
+                </div>
+                <div id="schoolRequestsList"></div>
+            </div>
+
+            <!-- ADMINS -->
+            <div id="adminsTab" class="tab-content">
+                <div class="filters">
+                    <select id="adminStatusFilter" onchange="filterAdminRequests()">
+                        <option value="">Tous les statuts</option>
+                        <option value="pending">En attente</option>
+                        <option value="approved">Approuvées</option>
+                        <option value="rejected">Rejetées</option>
+                    </select>
+                    <input type="text" id="adminSearchFilter" placeholder="Rechercher..." onkeyup="filterAdminRequests()">
+                    <button class="btn" onclick="loadAdminRequests()">🔄 Actualiser</button>
+                </div>
+                <div id="adminRequestsList"></div>
+            </div>
+
+            <!-- TOUS LES SIGNALEMENTS -->
+            <div id="allreportsTab" class="tab-content">
+                <div class="filters">
+                    <select id="allReportStatusFilter" onchange="filterAllReports()">
+                        <option value="">Tous les statuts</option>
+                        <option value="new">Nouveau</option>
+                        <option value="in_progress">En cours</option>
+                        <option value="resolved">Résolu</option>
+                        <option value="closed">Fermé</option>
+                    </select>
+                    <input type="text" id="allReportSearchFilter" placeholder="Rechercher par code ou école..." onkeyup="filterAllReports()">
+                    <button class="btn" onclick="loadAllReports()">🔄 Actualiser</button>
+                </div>
+                <div id="allReportsList"></div>
+            </div>
+
+            <!-- DEMANDES DE RÉVÉLATION D'IDENTITÉ -->
+            <div id="identityTab" class="tab-content">
+                <div class="filters">
+                    <select id="identityStatusFilter" onchange="filterIdentityRequests()">
+                        <option value="">Tous les statuts</option>
+                        <option value="pending">En attente</option>
+                        <option value="approved">Approuvées</option>
+                        <option value="rejected">Rejetées</option>
+                    </select>
+                    <button class="btn" onclick="loadIdentityRequests()">🔄 Actualiser</button>
+                </div>
+                <div id="identityRequestsList"></div>
+            </div>
+
+            <!-- SIGNALEMENTS SUSPECTS -->
+            <div id="reportsTab" class="tab-content">
+                <div class="filters">
+                    <select id="reportSeverityFilter" onchange="filterSuspiciousReports()">
+                        <option value="">Toutes les sévérités</option>
+                        <option value="critical">Critique</option>
+                        <option value="warning">Avertissement</option>
+                    </select>
+                    <button class="btn" onclick="loadSuspiciousReports()">🔄 Actualiser</button>
+                </div>
+                <div id="suspiciousReportsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Rejet -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeRejectModal()">&times;</span>
+            <h3>❌ Rejeter la Demande</h3>
+            <div class="form-group">
+                <label>Raison du rejet *</label>
+                <textarea id="rejectReason" placeholder="Expliquez pourquoi..."></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn" onclick="closeRejectModal()" style="background: #6c757d;">Annuler</button>
+                <button class="btn btn-reject" onclick="confirmReject()">Rejeter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détails -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close-btn" onclick="closeDetailsModal()">&times;</span>
+            <div id="detailsContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal WhatsApp -->
+    <div id="whatsappModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-btn" onclick="closeWhatsAppModal()">&times;</span>
+            <div id="whatsappModalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let schoolRequests = [];
+        let adminRequests = [];
+        let allReports = [];
+        let identityRequests = [];
+        let suspiciousReports = [];
+        let currentRejectId = null;
+        let currentRejectType = 'school';
+
+        // LOGIN
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const code = document.getElementById('accessCode').value;
+            
+            if (code === '200700') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadSchoolRequests();
+                loadAdminRequests();
+            } else {
+                const errorMsg = document.getElementById('loginError');
+                errorMsg.textContent = '❌ Code incorrect';
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        function logout() {
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('accessCode').value = '';
+        }
+
+        // TABS
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'schools') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('schoolsTab').classList.add('active');
+            } else if (tab === 'admins') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('adminsTab').classList.add('active');
+            } else if (tab === 'allreports') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('allreportsTab').classList.add('active');
+                loadAllReports();
+            } else if (tab === 'identity') {
+                document.querySelectorAll('.tab')[3].classList.add('active');
+                document.getElementById('identityTab').classList.add('active');
+                loadIdentityRequests();
+            } else if (tab === 'reports') {
+                document.querySelectorAll('.tab')[4].classList.add('active');
+                document.getElementById('reportsTab').classList.add('active');
+                loadSuspiciousReports();
+            }
+        }
+
+        // ÉCOLES
+        async function loadSchoolRequests() {
+            try {
+                const response = await fetch('/api/super-admin/school-requests');
+                const result = await response.json();
+                
+                if (result.success) {
+                    schoolRequests = result.requests;
+                    displaySchoolRequests(schoolRequests);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function displaySchoolRequests(requests) {
+            const container = document.getElementById('schoolRequestsList');
+            
+            if (requests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>Aucune demande d'école</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = requests.map((req, index) => {
+                const reqId = `req_${index}`;
+                window[reqId] = req; // Stocker la requête dans window pour éviter les problèmes d'échappement
+                
+                return `
+                <div class="request-card">
+                    <div class="request-header">
+                        <h3>🏫 ${req.school_name}</h3>
+                        <span class="badge ${req.status}">${getStatusLabel(req.status)}</span>
+                    </div>
+                    
+                    <div class="request-info">
+                        <div class="info-item">
+                            <div class="info-label">Ville</div>
+                            <div class="info-value">${req.school_city}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">${req.school_email}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Responsable</div>
+                            <div class="info-value">${req.admin_full_name}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Position</div>
+                            <div class="info-value">${req.admin_position || 'Non précisée'}</div>
+                        </div>
+                        ${req.generated_school_code ? `
+                        <div class="info-item">
+                            <div class="info-label">Code Unique</div>
+                            <div class="info-value" style="color: #28a745; font-size: 1.3em; font-weight: bold; font-family: monospace;">${req.generated_school_code}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="actions">
+                        ${req.status === 'pending' ? `
+                            <button class="btn btn-approve" onclick="approveSchool('${req.id}')">✅ Approuver</button>
+                            <button class="btn btn-reject" onclick="showRejectModal('${req.id}', 'school')">❌ Rejeter</button>
+                        ` : ''}
+                        ${req.status === 'approved' ? `
+                            <button class="btn" style="background: #dc3545;" onclick="deleteSchoolByRequest('${req.id}', '${req.school_name}', '${req.generated_school_code || 'N/A'}')">🗑️ Supprimer École</button>
+                        ` : ''}
+                        ${req.status === 'rejected' ? `
+                            <button class="btn" style="background: #6c757d;" onclick="deleteRequest('${req.id}', '${req.school_name}')">🗑️ Supprimer Demande</button>
+                        ` : ''}
+                        <button class="btn btn-view" onclick="showSchoolDetails(window['${reqId}'])">📋 Détails</button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        async function approveSchool(id) {
+            if (!confirm('Approuver cette école ? Un code sera généré et envoyé par WhatsApp.')) return;
+            
+            try {
+                const response = await fetch(`/api/super-admin/school-requests/${id}/approve`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Afficher la modal WhatsApp
+                    showWhatsAppModal(result);
+                    loadSchoolRequests();
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        function showWhatsAppModal(result) {
+            const modal = document.getElementById('whatsappModal');
+            const content = document.getElementById('whatsappModalContent');
+            
+            content.innerHTML = `
+                <h3 style="color: #25D366; margin-bottom: 20px; font-size: 1.8em;">
+                    ✅ École Approuvée !
+                </h3>
+                
+                <div style="background: #f0f7ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">🏫 ${result.school.name}</h4>
+                    <div style="font-size: 1.1em;">
+                        <strong style="color: #28a745;">🔑 Code unique:</strong>
+                        <div style="font-family: monospace; font-size: 1.8em; color: #28a745; font-weight: bold; margin: 10px 0; letter-spacing: 3px;">
+                            ${result.school.code}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #fff9e6; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f39c12;">
+                    <h4 style="color: #f39c12; margin-bottom: 15px;">👤 Compte Administrateur</h4>
+                    <div style="line-height: 1.8;">
+                        <strong>Username:</strong> ${result.admin.username}<br>
+                        <strong>Email:</strong> ${result.admin.email}<br>
+                        <strong>Téléphone:</strong> ${result.admin.phone}<br>
+                        <strong>Mot de passe:</strong> admin2025
+                    </div>
+                </div>
+
+                <div style="background: #e7ffe7; padding: 25px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #25D366;">
+                    <div style="margin-bottom: 15px; font-size: 1.2em; color: #25D366; font-weight: bold;">
+                        📱 ENVOYER PAR WHATSAPP
+                    </div>
+                    <a href="${result.whatsappLink}" 
+                       target="_blank" 
+                       style="display: inline-block; background: #25D366; color: white; padding: 15px 40px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 15px rgba(37,211,102,0.3); transition: all 0.3s;"
+                       onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(37,211,102,0.4)';"
+                       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(37,211,102,0.3)';">
+                        <svg style="vertical-align: middle; margin-right: 10px;" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        OUVRIR WHATSAPP
+                    </a>
+                    <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                        Le message est déjà pré-rempli avec toutes les informations !
+                    </div>
+                </div>
+
+                <div style="background: #fff; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 0.9em; color: #666;">
+                    <strong style="color: #333;">📝 Comment ça marche :</strong><br>
+                    1️⃣ Cliquez sur "OUVRIR WHATSAPP"<br>
+                    2️⃣ WhatsApp s'ouvre avec le message pré-rempli<br>
+                    3️⃣ Cliquez sur Envoyer<br>
+                    4️⃣ L'admin reçoit le code et les identifiants
+                </div>
+
+                <button onclick="closeWhatsAppModal()" style="width: 100%; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em; margin-top: 10px;">
+                    Fermer
+                </button>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeWhatsAppModal() {
+            document.getElementById('whatsappModal').style.display = 'none';
+        }
+
+        // ADMINS
+        async function loadAdminRequests() {
+            try {
+                const response = await fetch('/api/super-admin/requests');
+                const result = await response.json();
+                
+                if (result.success) {
+                    adminRequests = result.requests;
+                    displayAdminRequests(adminRequests);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function displayAdminRequests(requests) {
+            const container = document.getElementById('adminRequestsList');
+            
+            if (requests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>Aucune demande d'administrateur</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = requests.map(req => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <h3>👤 ${req.first_name} ${req.last_name}</h3>
+                        <span class="badge ${req.status}">${getStatusLabel(req.status)}</span>
+                    </div>
+                    
+                    <div class="request-info">
+                        <div class="info-item">
+                            <div class="info-label">École</div>
+                            <div class="info-value">${req.school_name || 'N/A'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">${req.email}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Position</div>
+                            <div class="info-value">${req.position}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        ${req.status === 'pending' ? `
+                            <button class="btn btn-approve" onclick="approveAdmin('${req.id}')">✅ Approuver</button>
+                            <button class="btn btn-reject" onclick="showRejectModal('${req.id}', 'admin')">❌ Rejeter</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function approveAdmin(id) {
+            if (!confirm('Approuver cet administrateur ?')) return;
+            
+            try {
+                const response = await fetch(`/api/super-admin/requests/${id}/approve`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Administrateur approuvé !');
+                    loadAdminRequests();
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // REJET
+        function showRejectModal(id, type) {
+            currentRejectId = id;
+            currentRejectType = type;
+            document.getElementById('rejectModal').style.display = 'flex';
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').style.display = 'none';
+            document.getElementById('rejectReason').value = '';
+        }
+
+        async function confirmReject() {
+            const reason = document.getElementById('rejectReason').value.trim();
+            
+            if (!reason) {
+                alert('Raison obligatoire');
+                return;
+            }
+            
+            const endpoint = currentRejectType === 'school' 
+                ? `/api/super-admin/school-requests/${currentRejectId}/reject`
+                : `/api/super-admin/requests/${currentRejectId}/reject`;
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('❌ Demande rejetée');
+                    closeRejectModal();
+                    currentRejectType === 'school' ? loadSchoolRequests() : loadAdminRequests();
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // FILTRES
+        function filterSchoolRequests() {
+            const status = document.getElementById('schoolStatusFilter').value;
+            const search = document.getElementById('schoolSearchFilter').value.toLowerCase();
+            
+            let filtered = schoolRequests;
+            
+            if (status) {
+                filtered = filtered.filter(r => r.status === status);
+            }
+            
+            if (search) {
+                filtered = filtered.filter(r => 
+                    r.school_name.toLowerCase().includes(search) ||
+                    r.school_city.toLowerCase().includes(search) ||
+                    r.admin_full_name.toLowerCase().includes(search) ||
+                    r.school_email.toLowerCase().includes(search)
+                );
+            }
+            
+            displaySchoolRequests(filtered);
+        }
+
+        function filterAdminRequests() {
+            const status = document.getElementById('adminStatusFilter').value;
+            const search = document.getElementById('adminSearchFilter').value.toLowerCase();
+            
+            let filtered = adminRequests;
+            
+            if (status) {
+                filtered = filtered.filter(r => r.status === status);
+            }
+            
+            if (search) {
+                filtered = filtered.filter(r => 
+                    (r.first_name + ' ' + r.last_name).toLowerCase().includes(search) ||
+                    r.email.toLowerCase().includes(search)
+                );
+            }
+            
+            displayAdminRequests(filtered);
+        }
+
+        // DÉTAILS
+        function showSchoolDetails(request) {
+            const detailsContent = document.getElementById('detailsContent');
+            
+            detailsContent.innerHTML = `
+                <h3 style="color: #667eea; margin-bottom: 25px; font-size: 1.8em;">📋 Détails de la Demande</h3>
+                
+                <div style="background: #f5f7fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px; font-size: 1.3em;">🏫 Informations de l'École</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div>
+                            <strong style="color: #666;">Nom :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_name}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Type :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_type || 'Non précisé'}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Ville :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_city}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Région :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_region || 'Non précisée'}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Adresse :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_address}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Niveau :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_level || 'Non précisé'}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Téléphone :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_phone}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Email :</strong><br>
+                            <span style="font-size: 1.1em;">${request.school_email}</span>
+                        </div>
+                    </div>
+                    ${request.school_website ? `
+                        <div style="margin-top: 15px;">
+                            <strong style="color: #666;">Site web :</strong><br>
+                            <a href="${request.school_website}" target="_blank" style="color: #667eea;">${request.school_website}</a>
+                        </div>
+                    ` : ''}
+                    ${request.school_description ? `
+                        <div style="margin-top: 15px;">
+                            <strong style="color: #666;">Description :</strong><br>
+                            <p style="margin-top: 5px; line-height: 1.6;">${request.school_description}</p>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px; font-size: 1.3em;">👤 Informations du Responsable</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div>
+                            <strong style="color: #666;">Nom complet :</strong><br>
+                            <span style="font-size: 1.1em;">${request.admin_full_name}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Position :</strong><br>
+                            <span style="font-size: 1.1em;">${request.admin_position || 'Non précisée'}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Email :</strong><br>
+                            <span style="font-size: 1.1em;">${request.admin_email}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Téléphone :</strong><br>
+                            <span style="font-size: 1.1em;">${request.admin_phone}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: ${request.status === 'approved' ? '#d4edda' : request.status === 'rejected' ? '#f8d7da' : '#fff3cd'}; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: ${request.status === 'approved' ? '#155724' : request.status === 'rejected' ? '#721c24' : '#856404'}; margin-bottom: 15px; font-size: 1.3em;">📊 Statut de la Demande</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div>
+                            <strong style="color: #666;">ID de demande :</strong><br>
+                            <span style="font-family: monospace; font-size: 1em; letter-spacing: 1px;">${request.id}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Statut :</strong><br>
+                            <span style="font-size: 1.2em; font-weight: bold;">${getStatusLabel(request.status)}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #666;">Date de création :</strong><br>
+                            <span style="font-size: 1.1em;">${new Date(request.created_at).toLocaleString('fr-FR')}</span>
+                        </div>
+                        ${request.reviewed_at ? `
+                        <div>
+                            <strong style="color: #666;">Date de traitement :</strong><br>
+                            <span style="font-size: 1.1em;">${new Date(request.reviewed_at).toLocaleString('fr-FR')}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ${request.generated_school_code ? `
+                        <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
+                            <strong style="color: #28a745; font-size: 1.2em;">✅ Code d'école généré :</strong><br>
+                            <span style="font-family: monospace; font-size: 1.8em; color: #28a745; font-weight: bold; letter-spacing: 3px;">${request.generated_school_code}</span>
+                        </div>
+                    ` : ''}
+                    ${request.rejected_reason ? `
+                        <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #dc3545;">
+                            <strong style="color: #dc3545;">❌ Raison du rejet :</strong><br>
+                            <p style="margin-top: 10px; line-height: 1.6; color: #721c24;">${request.rejected_reason}</p>
+                        </div>
+                    ` : ''}
+                    ${request.review_notes ? `
+                        <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
+                            <strong style="color: #666;">📝 Notes de review :</strong><br>
+                            <p style="margin-top: 10px; line-height: 1.6;">${request.review_notes}</p>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+                    ${request.status === 'pending' ? `
+                        <button onclick="closeDetailsModal(); approveSchool('${request.id}');" style="padding: 12px 30px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em;">
+                            ✅ Approuver
+                        </button>
+                        <button onclick="closeDetailsModal(); showRejectModal('${request.id}', 'school');" style="padding: 12px 30px; background: #dc3545; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em;">
+                            ❌ Rejeter
+                        </button>
+                    ` : ''}
+                    <button onclick="closeDetailsModal()" style="padding: 12px 30px; background: #6c757d; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em;">
+                        Fermer
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('detailsModal').style.display = 'flex';
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        // Fonction helper pour afficher les notifications
+        function showNotification(title, subtitle, color) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `position: fixed; top: 20px; right: 20px; background: ${color}; color: white; padding: 20px 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; font-weight: bold; animation: slideIn 0.3s ease-out;`;
+            notification.innerHTML = `${title}<br><small>${subtitle}</small>`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.3s, transform 0.3s';
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // SUPPRESSION
+        async function deleteSchoolByRequest(requestId, schoolName, schoolCode) {
+            if (!confirm(`⚠️ ATTENTION !\n\nVoulez-vous vraiment SUPPRIMER cette école ?\n\nÉcole : ${schoolName}\nCode : ${schoolCode}\n\nCette action va :\n• Supprimer l'école de la base\n• Supprimer tous les comptes administrateurs\n• Supprimer tous les signalements\n• Retirer COMPLÈTEMENT l'accès\n\nCette action est IRRÉVERSIBLE !`)) return;
+            
+            // Trouver la carte correspondante pour l'animation
+            const cards = document.querySelectorAll('.request-card');
+            let cardToRemove = null;
+            
+            cards.forEach(card => {
+                const cardText = card.textContent;
+                if (cardText.includes(schoolName) && cardText.includes(schoolCode)) {
+                    cardToRemove = card;
+                }
+            });
+            
+            try {
+                // D'abord, récupérer l'ID de l'école depuis la demande
+                const requestResponse = await fetch(`/api/super-admin/school-requests/${requestId}`);
+                const requestResult = await requestResponse.json();
+                
+                if (!requestResult.success) {
+                    alert('❌ Erreur: Demande non trouvée');
+                    return;
+                }
+                
+                const schoolId = requestResult.request.generated_school_id;
+                
+                if (!schoolId) {
+                    alert('❌ Erreur: Cette école n\'a pas d\'ID enregistré. Impossible de la supprimer.');
+                    return;
+                }
+                
+                // Maintenant supprimer l'école
+                const response = await fetch(`/api/super-admin/schools/${schoolId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Animation de disparition immédiate
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'all 0.3s ease-out';
+                        cardToRemove.style.opacity = '0';
+                        cardToRemove.style.transform = 'scale(0.9)';
+                        
+                        setTimeout(() => {
+                            cardToRemove.remove();
+                            
+                            // Vérifier s'il reste des cartes
+                            const remainingCards = document.querySelectorAll('.request-card');
+                            if (remainingCards.length === 0) {
+                                document.getElementById('schoolRequestsList').innerHTML = `
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">📭</div>
+                                        <p>Aucune demande d'école</p>
+                                    </div>
+                                `;
+                            }
+                        }, 300);
+                    }
+                    
+                    // Afficher le message de succès
+                    showNotification(`✅ École supprimée !`, schoolName, '#28a745');
+                    
+                    // Rafraîchir la liste complète en arrière-plan
+                    setTimeout(() => loadSchoolRequests(), 500);
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur de connexion au serveur');
+            }
+        }
+        
+        // Fonction de suppression directe (si on a déjà l'ID)
+        async function deleteSchool(schoolId, schoolName, schoolCode) {
+            if (!confirm(`⚠️ ATTENTION !\n\nVoulez-vous vraiment SUPPRIMER l'accès de cette école ?\n\nÉcole : ${schoolName}\nCode : ${schoolCode}\n\nCette action va :\n• Supprimer l'école de la base\n• Supprimer tous les comptes administrateurs\n• Supprimer tous les signalements\n• Retirer COMPLÈTEMENT l'accès\n\nCette action est IRRÉVERSIBLE !`)) return;
+            
+            // Trouver la carte pour l'animation
+            const cards = document.querySelectorAll('.request-card');
+            let cardToRemove = null;
+            cards.forEach(card => {
+                if (card.textContent.includes(schoolName)) {
+                    cardToRemove = card;
+                }
+            });
+            
+            try {
+                const response = await fetch(`/api/super-admin/schools/${schoolId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Animation de disparition
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'all 0.3s ease-out';
+                        cardToRemove.style.opacity = '0';
+                        cardToRemove.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            cardToRemove.remove();
+                            const remainingCards = document.querySelectorAll('.request-card');
+                            if (remainingCards.length === 0) {
+                                document.getElementById('schoolRequestsList').innerHTML = `
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">📭</div>
+                                        <p>Aucune demande d'école</p>
+                                    </div>
+                                `;
+                            }
+                        }, 300);
+                    }
+                    
+                    // Notification de succès
+                    showNotification(`✅ École supprimée !`, schoolName, '#28a745');
+                    setTimeout(() => loadSchoolRequests(), 500);
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        async function deleteRequest(requestId, schoolName) {
+            if (!confirm(`Voulez-vous vraiment supprimer cette demande rejetée ?\n\nÉcole : ${schoolName}\n\nCette action est irréversible.`)) return;
+            
+            // Trouver la carte pour l'animation
+            const cards = document.querySelectorAll('.request-card');
+            let cardToRemove = null;
+            cards.forEach(card => {
+                if (card.textContent.includes(schoolName)) {
+                    cardToRemove = card;
+                }
+            });
+            
+            try {
+                const response = await fetch(`/api/super-admin/school-requests/${requestId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Animation de disparition
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'all 0.3s ease-out';
+                        cardToRemove.style.opacity = '0';
+                        cardToRemove.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            cardToRemove.remove();
+                            const remainingCards = document.querySelectorAll('.request-card');
+                            if (remainingCards.length === 0) {
+                                document.getElementById('schoolRequestsList').innerHTML = `
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">📭</div>
+                                        <p>Aucune demande d'école</p>
+                                    </div>
+                                `;
+                            }
+                        }, 300);
+                    }
+                    
+                    // Notification de succès
+                    showNotification(`✅ Demande supprimée !`, schoolName, '#6c757d');
+                    setTimeout(() => loadSchoolRequests(), 500);
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // TOUS LES SIGNALEMENTS
+        async function loadAllReports() {
+            try {
+                const response = await fetch('/api/super-admin/all-reports?limit=200');
+                const result = await response.json();
+                
+                if (result.success) {
+                    allReports = result.reports;
+                    displayAllReports(allReports);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function displayAllReports(reports) {
+            const container = document.getElementById('allReportsList');
+            
+            if (reports.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>Aucun signalement</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reports.map(report => {
+                return `
+                <div class="request-card" style="display: flex; align-items: center; gap: 20px; padding: 20px;">
+                    ${report.face_photo ? `
+                        <div style="flex-shrink: 0;">
+                            <img src="${report.face_photo}" alt="Photo de visage" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        </div>
+                    ` : `
+                        <div style="flex-shrink: 0; width: 150px; height: 150px; background: #e9ecef; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3em;">
+                            👤
+                        </div>
+                    `}
+                    
+                    <div style="flex: 1;">
+                        <div style="font-size: 1.5em; font-weight: bold; color: #667eea; margin-bottom: 10px;">
+                            📌 ${report.id}
+                        </div>
+                        <div style="font-size: 1.2em; color: #333; margin-bottom: 5px;">
+                            🏫 <strong>${report.school_name || 'N/A'}</strong>
+                        </div>
+                        <div style="color: #666; font-size: 0.95em;">
+                            📅 ${new Date(report.created_at).toLocaleString('fr-FR')}
+                        </div>
+                    </div>
+                    
+                    <div style="flex-shrink: 0;">
+                        <button class="btn btn-reject" onclick="deleteReport('${report.id}', '${report.school_name}')" style="padding: 10px 20px;">
+                            🗑️ Supprimer
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function filterAllReports() {
+            const status = document.getElementById('allReportStatusFilter').value;
+            const search = document.getElementById('allReportSearchFilter').value.toLowerCase();
+            
+            let filtered = allReports;
+            
+            if (status) {
+                filtered = filtered.filter(r => r.status === status);
+            }
+            
+            if (search) {
+                filtered = filtered.filter(r => 
+                    (r.id && r.id.toLowerCase().includes(search)) ||
+                    (r.school_name && r.school_name.toLowerCase().includes(search)) ||
+                    (r.school_code && r.school_code.toLowerCase().includes(search))
+                );
+            }
+            
+            displayAllReports(filtered);
+        }
+
+        async function deleteReport(reportId, schoolName) {
+            if (!confirm(`⚠️ ATTENTION !\n\nVoulez-vous vraiment supprimer ce signalement ?\n\nCode: ${reportId}\nÉcole: ${schoolName}\n\nCette action est IRRÉVERSIBLE et supprimera :\n- Le signalement\n- Toutes les pièces jointes\n- Toutes les conversations associées\n- Tous les logs d'abus\n\nConfirmez-vous la suppression ?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/super-admin/reports/${reportId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Signalement supprimé avec succès !');
+                    loadAllReports();
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // DEMANDES DE RÉVÉLATION D'IDENTITÉ
+        async function loadIdentityRequests() {
+            console.log('🔵 Chargement des demandes de révélation...');
+            try {
+                const response = await fetch('/api/super-admin/identity-reveal-requests');
+                console.log('🔵 Réponse reçue:', response.status);
+                const result = await response.json();
+                console.log('🔵 Résultat:', result);
+                
+                if (result.success) {
+                    identityRequests = result.requests;
+                    console.log('🔵 Nombre de demandes:', identityRequests.length);
+                    displayIdentityRequests(identityRequests);
+                } else {
+                    console.error('❌ Erreur:', result.message);
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        }
+
+        function displayIdentityRequests(requests) {
+            console.log('🔵 Affichage des demandes:', requests);
+            const container = document.getElementById('identityRequestsList');
+            
+            if (!container) {
+                console.error('❌ Container identityRequestsList non trouvé !');
+                return;
+            }
+            
+            if (requests.length === 0) {
+                console.log('📭 Aucune demande à afficher');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>Aucune demande de révélation d'identité</p>
+                    </div>
+                `;
+                return;
+            }
+
+            console.log('🔵 Génération HTML pour', requests.length, 'demandes');
+            container.innerHTML = requests.map(req => `
+                <div class="request-card" style="display: flex; align-items: center; gap: 20px; padding: 20px;">
+                    ${req.face_photo ? `
+                        <div style="flex-shrink: 0;">
+                            <img src="${req.face_photo}" alt="Photo de visage" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        </div>
+                    ` : `
+                        <div style="flex-shrink: 0; width: 150px; height: 150px; background: #e9ecef; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3em;">
+                            👤
+                        </div>
+                    `}
+                    
+                    <div style="flex: 1;">
+                        <div style="font-size: 1.5em; font-weight: bold; color: #667eea; margin-bottom: 10px;">
+                            📌 ${req.report_code}
+                        </div>
+                        <div style="font-size: 1.2em; color: #333; margin-bottom: 5px;">
+                            🏫 <strong>${req.school_name || 'N/A'}</strong>
+                        </div>
+                        <div style="color: #666; font-size: 0.95em;">
+                            📅 ${new Date(req.created_at).toLocaleString('fr-FR')}
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <span class="badge ${req.status}">${getStatusLabel(req.status)}</span>
+                        </div>
+                    </div>
+                    
+                    ${req.status === 'pending' ? `
+                        <div style="flex-shrink: 0; display: flex; gap: 10px;">
+                            <button class="btn" style="background: #28a745; padding: 10px 20px;" 
+                                    data-request-id="${req.id}" 
+                                    data-report-code="${req.report_code}"
+                                    onclick="approveIdentityRequest(this.dataset.requestId, this.dataset.reportCode)">
+                                ✅ Approuver
+                            </button>
+                            <button class="btn btn-reject" style="padding: 10px 20px;" 
+                                    data-request-id="${req.id}" 
+                                    data-report-code="${req.report_code}"
+                                    onclick="rejectIdentityRequest(this.dataset.requestId, this.dataset.reportCode)">
+                                ❌ Rejeter
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function filterIdentityRequests() {
+            const status = document.getElementById('identityStatusFilter').value;
+            
+            let filtered = identityRequests;
+            if (status) {
+                filtered = filtered.filter(r => r.status === status);
+            }
+            
+            displayIdentityRequests(filtered);
+        }
+
+        async function approveIdentityRequest(requestId, reportCode) {
+            console.log('🔵 Approbation demandée:', { requestId, reportCode });
+            
+            if (!confirm(`Voulez-vous vraiment approuver cette demande de révélation d'identité pour le signalement ${reportCode} ?`)) return;
+            
+            try {
+                console.log('🔵 Envoi requête approbation...');
+                const response = await fetch(`/api/super-admin/identity-reveal-requests/${requestId}/approve`, {
+                    method: 'POST'
+                });
+                
+                console.log('🔵 Réponse reçue:', response.status);
+                const result = await response.json();
+                console.log('🔵 Résultat:', result);
+                
+                if (result.success) {
+                    alert('✅ Demande approuvée ! L\'identité a été révélée à l\'école.');
+                    loadIdentityRequests();
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('❌ Erreur de connexion: ' + error.message);
+            }
+        }
+
+        async function rejectIdentityRequest(requestId, reportCode) {
+            console.log('🔴 Rejet demandé:', { requestId, reportCode });
+            
+            const reason = prompt(`Pourquoi rejetez-vous cette demande pour le signalement ${reportCode} ?`);
+            if (!reason) return;
+            
+            if (reason.length < 20) {
+                alert('❌ La raison doit contenir au moins 20 caractères');
+                return;
+            }
+            
+            try {
+                console.log('🔴 Envoi requête rejet...');
+                const response = await fetch(`/api/super-admin/identity-reveal-requests/${requestId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: reason })
+                });
+                
+                console.log('🔴 Réponse reçue:', response.status);
+                const result = await response.json();
+                console.log('🔴 Résultat:', result);
+                
+                if (result.success) {
+                    alert('✅ Demande rejetée.');
+                    loadIdentityRequests();
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('❌ Erreur de connexion: ' + error.message);
+            }
+        }
+
+        // SIGNALEMENTS SUSPECTS
+        async function loadSuspiciousReports() {
+            try {
+                const response = await fetch('/api/super-admin/suspicious-reports?limit=100');
+                const result = await response.json();
+                
+                if (result.success) {
+                    suspiciousReports = result.reports;
+                    displaySuspiciousReports(suspiciousReports);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function displaySuspiciousReports(reports) {
+            const container = document.getElementById('suspiciousReportsList');
+            
+            if (reports.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <p>Aucun signalement suspect détecté</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reports.map(report => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <h3>⚠️ ${report.title || 'Signalement'}</h3>
+                        <span class="badge ${report.severity === 'critical' ? 'rejected' : 'pending'}">
+                            ${report.severity === 'critical' ? '🚨 Critique' : '⚠️ Avertissement'}
+                        </span>
+                    </div>
+                    
+                    <div class="request-info">
+                        <div class="info-item">
+                            <div class="info-label">Code Signalement</div>
+                            <div class="info-value">${report.report_code || 'N/A'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">École</div>
+                            <div class="info-value">${report.school_name || 'N/A'} (${report.school_code || 'N/A'})</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Catégorie</div>
+                            <div class="info-value">${report.category || 'N/A'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Urgence</div>
+                            <div class="info-value">${report.urgency || 'N/A'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Score de Confiance</div>
+                            <div class="info-value">${report.trust_score}/100</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date</div>
+                            <div class="info-value">${new Date(report.report_created_at || report.created_at).toLocaleString('fr-FR')}</div>
+                        </div>
+                    </div>
+
+                    ${report.face_photo ? `
+                        <div style="margin: 15px 0;">
+                            <div class="info-label">Photo de Visage</div>
+                            <img src="${report.face_photo}" alt="Photo de visage" style="max-width: 200px; border-radius: 8px; margin-top: 10px;">
+                        </div>
+                    ` : ''}
+
+                    ${report.message ? `
+                        <div style="margin: 15px 0;">
+                            <div class="info-label">Description</div>
+                            <div style="background: #f5f7fa; padding: 15px; border-radius: 8px; margin-top: 5px;">
+                                ${report.message}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${report.issues && report.issues.length > 0 ? `
+                        <div style="margin: 15px 0;">
+                            <div class="info-label">Problèmes Détectés</div>
+                            <div style="margin-top: 10px;">
+                                ${report.issues.map(issue => `
+                                    <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 5px;">
+                                        <strong>${issue.type}:</strong> ${issue.message}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function filterSuspiciousReports() {
+            const severity = document.getElementById('reportSeverityFilter').value;
+            
+            let filtered = suspiciousReports;
+            if (severity) {
+                filtered = filtered.filter(r => r.severity === severity);
+            }
+            
+            displaySuspiciousReports(filtered);
+        }
+
+        // UTILS
+        function getStatusLabel(status) {
+            const labels = {
+                'pending': 'En attente',
+                'approved': 'Approuvée',
+                'rejected': 'Rejetée'
+            };
+            return labels[status] || status;
+        }
+    </script>
+</body>
+</html>

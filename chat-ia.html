@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant IA - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .ai-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            margin: 0 auto 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: #f0f4ff;
+            border-radius: 15px;
+        }
+
+        .chat-container {
+            background: white;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.ai {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.ai .message-bubble {
+            background: #e9ecef;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-size: 1.5em;
+        }
+
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #28a745;
+            color: white;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 20px;
+            background: #e9ecef;
+            border-radius: 20px;
+            max-width: 70px;
+        }
+
+        .typing-indicator.show {
+            display: inline-block;
+        }
+
+        .typing-indicator span {
+            height: 10px;
+            width: 10px;
+            background: #667eea;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 8px 15px;
+            background: #f0f4ff;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            resize: none;
+            font-family: inherit;
+            font-size: 1em;
+            max-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .session-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .ai-thinking {
+            font-style: italic;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Retour à l'accueil</a>
+
+        <div class="header">
+            <div class="ai-avatar">🤖</div>
+            <h1>Haniel - Ton Assistant IA</h1>
+            <p>Bonjour, je suis Haniel ! Je suis là pour t'aider à signaler un problème de manière sécurisée</p>
+        </div>
+
+        <div class="chat-container">
+            <div class="messages-area" id="messagesArea">
+                <!-- Les messages apparaîtront ici -->
+            </div>
+
+            <div class="input-area">
+                <div id="sessionInfo" class="session-info" style="display: none;">
+                    <strong>📋 Session ID:</strong> <span id="sessionId"></span>
+                </div>
+
+                <div class="quick-actions" id="quickActions">
+                    <!-- Actions rapides générées par l'IA -->
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; font-size: 0.9em;">
+                    <button onclick="sendMessage('résumé')" style="padding: 6px 12px; background: #e3f2fd; color: #1976d2; border: 1px solid #2196f3; border-radius: 15px; cursor: pointer; font-size: 0.85em;">
+                        📋 Résumé
+                    </button>
+                    <button onclick="sendMessage('aide')" style="padding: 6px 12px; background: #fff3e0; color: #e65100; border: 1px solid #ff9800; border-radius: 15px; cursor: pointer; font-size: 0.85em;">
+                        💡 Conseils
+                    </button>
+                    <button onclick="sendMessage('modifier')" style="padding: 6px 12px; background: #f3e5f5; color: #6a1b9a; border: 1px solid #9c27b0; border-radius: 15px; cursor: pointer; font-size: 0.85em;">
+                        ✏️ Modifier
+                    </button>
+                </div>
+
+                <div class="input-group">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Écris ton message ici..."
+                        rows="2"
+                        onkeypress="handleKeyPress(event)"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                        Envoyer
+                    </button>
+                </div>
+                <small style="color: #999; font-size: 0.85em; margin-top: 5px; display: block; text-align: center;">
+                    💬 Toutes tes discussions sont confidentielles et sécurisées
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionId = null;
+        let accessCode = null;
+        let conversationContext = {};
+        let lastMessageTime = null;
+        let pollingInterval = null;
+
+        // Initialiser la conversation
+        window.onload = function() {
+            // Vérifier si on reprend une conversation
+            const urlParams = new URLSearchParams(window.location.search);
+            const isResume = urlParams.get('resume') === 'true';
+            
+            if (isResume) {
+                resumeConversation();
+            } else {
+                initConversation();
+            }
+        };
+
+        async function initConversation() {
+            try {
+                const response = await fetch('/api/ai-chat/init', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    sessionId = result.sessionId;
+                    accessCode = result.accessCode;
+                    conversationContext = result.context;
+                    
+                    // Sauvegarder en localStorage
+                    localStorage.setItem('hanielSessionId', sessionId);
+                    localStorage.setItem('hanielAccessCode', accessCode);
+                    
+                    document.getElementById('sessionId').textContent = sessionId;
+                    document.getElementById('sessionInfo').style.display = 'block';
+                    
+                    // Afficher le code d'accès
+                    displayAccessCodeNotification(accessCode);
+                    
+                    // Message de bienvenue de l'IA
+                    displayAIMessage(result.welcomeMessage);
+                    lastMessageTime = new Date().toISOString();
+                    
+                    // Actions rapides suggérées
+                    if (result.quickActions) {
+                        displayQuickActions(result.quickActions);
+                    }
+
+                    // Démarrer le polling pour les réponses admin
+                    startPollingForAdminReplies();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                displayAIMessage("Désolé, une erreur s'est produite. Réessaie plus tard.");
+            }
+        }
+
+        // Reprendre une conversation existante
+        async function resumeConversation() {
+            sessionId = localStorage.getItem('hanielSessionId');
+            accessCode = localStorage.getItem('hanielAccessCode');
+            
+            if (!sessionId || !accessCode) {
+                displayAIMessage("❌ Impossible de reprendre la conversation. Session non trouvée.");
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/ai-chat/verify-access', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accessCode: accessCode })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    sessionId = result.sessionId;
+                    
+                    document.getElementById('sessionId').textContent = sessionId;
+                    document.getElementById('sessionInfo').style.display = 'block';
+                    
+                    // Afficher l'historique des messages
+                    displayAIMessage("🙌 Bienvenue ! Voici l'historique de notre conversation :");
+                    
+                    result.messages.forEach(msg => {
+                        if (msg.role === 'user') {
+                            displayUserMessage(msg.message, false);
+                        } else if (msg.role === 'ai') {
+                            displayAIMessage(msg.message, false);
+                        } else if (msg.role === 'admin') {
+                            displayAdminMessage(msg.message);
+                        }
+                    });
+                    
+                    if (result.reportCode) {
+                        displayCompletionMessage(result.reportCode, accessCode);
+                    }
+                    
+                    displayAIMessage("💬 Tu peux continuer à me poser des questions ou discuter avec l'école !");
+                    
+                    // Démarrer le polling
+                    startPollingForAdminReplies();
+                } else {
+                    displayAIMessage("❌ Code d'accès invalide. Veuillez réessayer.");
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                displayAIMessage("❌ Erreur lors de la reprise de la conversation.");
+            }
+        }
+        
+        // Afficher notification du code d'accès
+        function displayAccessCodeNotification(code) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                margin: 20px 0;
+                text-align: center;
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+                animation: slideIn 0.5s ease;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 1.1em; margin-bottom: 10px;">
+                    🔑 <strong>Ton code d'accès personnel</strong>
+                </div>
+                <div style="font-size: 2em; font-weight: bold; letter-spacing: 5px; margin: 10px 0;">
+                    ${code}
+                </div>
+                <div style="font-size: 0.9em; opacity: 0.9;">
+                    ⚠️ Note bien ce code ! Il te permettra de revenir continuer cette conversation plus tard.
+                </div>
+                <div style="margin-top: 10px; font-size: 0.85em; opacity: 0.8;">
+                    Tu pourras aussi voir les réponses de ton école avec ce code.
+                </div>
+            `;
+            
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.appendChild(notification);
+            scrollToBottom();
+        }
+        
+        // Afficher un message de l'admin
+        function displayAdminMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message admin-message';
+            messageDiv.style.cssText = `
+                background: #28a745;
+                color: white;
+                padding: 15px;
+                border-radius: 15px;
+                margin: 15px 0;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            messageDiv.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">
+                    🏫 Message de ton école :
+                </div>
+                <div>${escapeHtml(message).replace(/\n/g, '<br>')}</div>
+            `;
+            
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Envoyer un message
+        async function sendMessage(text = null) {
+            const input = document.getElementById('messageInput');
+            const message = text || input.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
+
+            if (!message) return;
+
+            // Afficher le message utilisateur
+            displayUserMessage(message);
+            input.value = '';
+
+            // Afficher l'indicateur de typing
+            showTypingIndicator();
+
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/ai-chat/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sessionId: sessionId,
+                        message: message,
+                        context: conversationContext
+                    })
+                });
+
+                const result = await response.json();
+
+                hideTypingIndicator();
+
+                console.log('📥 Résultat reçu du serveur:', result);
+                console.log('📊 reportCreated:', result.reportCreated);
+                console.log('📋 reportCode:', result.reportCode);
+                console.log('🔐 accessCode:', result.accessCode);
+
+                if (result.success) {
+                    // Mettre à jour le contexte
+                    conversationContext = result.context;
+                    
+                    // Afficher la réponse de l'IA
+                    displayAIMessage(result.aiResponse);
+                    
+                    // Vérifier si l'IA demande une photo de visage
+                    if (result.context && result.context.waitingForPhoto) {
+                        displayFacePhotoCapture();
+                    } else if (result.quickActions) {
+                        // Mettre à jour les actions rapides normales
+                        displayQuickActions(result.quickActions);
+                    }
+
+                    // Si l'IA a créé un signalement
+                    if (result.reportCreated) {
+                        console.log('✅ Affichage des codes...');
+                        displayReportCreated(result.reportCode, result.accessCode);
+                        
+                        // Afficher message de continuation
+                        setTimeout(() => {
+                            displayAIMessage("✅ Ton signalement a été créé avec succès !\n\n💬 Tu peux continuer à m'écrire ici si tu veux ajouter des informations. L'école pourra aussi te répondre directement dans cette conversation.");
+                        }, 1000);
+                    } else {
+                        console.log('⚠️ Pas de signalement créé (reportCreated = false)');
+                    }
+                } else {
+                    displayAIMessage("Désolé, je n'ai pas pu traiter ta demande.");
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                hideTypingIndicator();
+                displayAIMessage("Une erreur s'est produite. Réessaie.");
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        // Afficher un message utilisateur
+        function displayUserMessage(text) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble">${escapeHtml(text)}</div>
+                <div class="message-avatar">👤</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Afficher un message IA
+        function displayAIMessage(text) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">${escapeHtml(text)}</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Afficher l'indicateur de typing
+        function showTypingIndicator() {
+            const messagesArea = document.getElementById('messagesArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typingIndicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="typing-indicator show">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            
+            messagesArea.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        // Masquer l'indicateur
+        function hideTypingIndicator() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        // Afficher les actions rapides
+        function displayQuickActions(actions) {
+            const container = document.getElementById('quickActions');
+            container.innerHTML = '';
+            
+            actions.forEach(action => {
+                const btn = document.createElement('button');
+                btn.className = 'quick-btn';
+                btn.textContent = action.label;
+                btn.onclick = () => sendMessage(action.message);
+                container.appendChild(btn);
+            });
+        }
+
+        // Afficher l'interface de capture photo
+        let stream = null;
+        let facePhotoBlob = null;
+
+        function displayFacePhotoCapture() {
+            const container = document.getElementById('quickActions');
+            container.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h3 style="color: #667eea; margin: 0 0 10px 0;">📸 Capture Photo Obligatoire</h3>
+                        <p style="color: #666; font-size: 0.9em; margin: 0;">Prends une photo de ton visage pour continuer</p>
+                    </div>
+                    
+                    <button id="startCameraBtn" onclick="startCamera()" style="width: 100%; padding: 15px; background: #4CAF50; color: white; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; margin-bottom: 10px;">
+                        📷 Activer la caméra
+                    </button>
+                    
+                    <div id="cameraContainer" style="display: none; margin-top: 15px;">
+                        <video id="camera" autoplay playsinline style="width: 100%; max-width: 300px; border-radius: 10px; border: 3px solid #667eea; display: block; margin: 0 auto 15px;"></video>
+                        <div style="text-align: center;">
+                            <button onclick="capturePhoto()" style="padding: 10px 20px; background: #2196F3; color: white; border: none; border-radius: 10px; cursor: pointer; margin-right: 10px;">
+                                📸 Capturer
+                            </button>
+                            <button onclick="cancelCamera()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 10px; cursor: pointer;">
+                                ❌ Annuler
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="photoPreview" style="display: none; text-align: center; margin-top: 15px;">
+                        <p style="color: #28a745; font-weight: bold; margin-bottom: 10px;">✅ Photo capturée !</p>
+                        <canvas id="photoCanvas" style="max-width: 300px; border-radius: 10px; border: 3px solid #28a745; margin: 0 auto 15px;"></canvas>
+                        <div>
+                            <button onclick="retakePhoto()" style="padding: 10px 20px; background: #ffc107; color: #856404; border: none; border-radius: 10px; cursor: pointer; margin-right: 10px;">
+                                🔄 Reprendre
+                            </button>
+                            <button onclick="uploadPhoto()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer;">
+                                ✅ Confirmer et continuer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } 
+                });
+                
+                const camera = document.getElementById('camera');
+                camera.srcObject = stream;
+                
+                document.getElementById('startCameraBtn').style.display = 'none';
+                document.getElementById('cameraContainer').style.display = 'block';
+            } catch (error) {
+                alert('❌ Impossible d\'accéder à la caméra. Vérifie les autorisations.');
+            }
+        }
+
+        function capturePhoto() {
+            const camera = document.getElementById('camera');
+            const canvas = document.getElementById('photoCanvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = camera.videoWidth;
+            canvas.height = camera.videoHeight;
+            context.drawImage(camera, 0, 0);
+            
+            canvas.toBlob(function(blob) {
+                facePhotoBlob = blob;
+                
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                
+                document.getElementById('cameraContainer').style.display = 'none';
+                document.getElementById('photoPreview').style.display = 'block';
+            }, 'image/jpeg', 0.8);
+        }
+
+        function cancelCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            document.getElementById('cameraContainer').style.display = 'none';
+            document.getElementById('startCameraBtn').style.display = 'block';
+        }
+
+        function retakePhoto() {
+            facePhotoBlob = null;
+            document.getElementById('photoPreview').style.display = 'none';
+            document.getElementById('startCameraBtn').style.display = 'block';
+        }
+
+        async function uploadPhoto() {
+            if (!facePhotoBlob) {
+                alert('❌ Aucune photo capturée');
+                return;
+            }
+
+            showTypingIndicator();
+
+            const formData = new FormData();
+            formData.append('sessionId', sessionId);
+            formData.append('facePhoto', facePhotoBlob, 'face-photo.jpg');
+
+            try {
+                const response = await fetch('/api/ai-chat/upload-face', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                hideTypingIndicator();
+
+                if (result.success) {
+                    displayAIMessage('✅ Photo enregistrée ! Je continue maintenant avec la création de ton signalement...');
+                    
+                    // Masquer l'interface de capture
+                    document.getElementById('quickActions').innerHTML = '';
+                    
+                    // Envoyer un message pour continuer le processus
+                    setTimeout(() => {
+                        sendMessage('Photo prise, je continue');
+                    }, 1500);
+                } else {
+                    alert('❌ Erreur lors de l\'envoi de la photo');
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                alert('❌ Erreur lors de l\'envoi de la photo');
+            }
+        }
+
+        // Afficher le signalement créé
+        function displayReportCreated(reportCode, accessCode) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    <strong style="color: #28a745;">✅ Signalement créé avec succès !</strong><br><br>
+                    <strong>Code de suivi:</strong><br>
+                    <span style="font-family: monospace; font-size: 1.2em; color: #667eea;">${reportCode}</span><br>
+                    <button onclick="copyCode('${reportCode}')" style="margin: 10px 0; padding: 8px 15px; background: #667eea; color: white; border: none; border-radius: 15px; cursor: pointer;">
+                        📋 Copier
+                    </button><br><br>
+                    <strong>Code d'accès discussion:</strong><br>
+                    <span style="font-family: monospace; font-size: 1.2em; color: #856404;">${accessCode}</span><br>
+                    <button onclick="copyCode('${accessCode}')" style="margin: 10px 0; padding: 8px 15px; background: #ffc107; color: #856404; border: none; border-radius: 15px; cursor: pointer;">
+                        📋 Copier
+                    </button><br><br>
+                    <small style="color: #666;">⚠️ Conserve ces codes précieusement !</small>
+                </div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Copier un code
+        function copyCode(code) {
+            navigator.clipboard.writeText(code);
+            alert('✅ Code copié : ' + code);
+        }
+
+        // Enter pour envoyer
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Scroll vers le bas
+        function scrollToBottom() {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        // Démarrer le polling pour les réponses admin
+        function startPollingForAdminReplies() {
+            // Vérifier toutes les 5 secondes
+            pollingInterval = setInterval(async () => {
+                if (!sessionId) return;
+
+                try {
+                    const response = await fetch(`/api/ai-chat/user/messages/${sessionId}?since=${encodeURIComponent(lastMessageTime)}`);
+                    const result = await response.json();
+
+                    if (result.success && result.messages.length > 0) {
+                        result.messages.forEach(msg => {
+                            if (msg.role === 'admin') {
+                                displayAdminMessage(msg.message);
+                            }
+                        });
+                        // Mettre à jour le timestamp
+                        lastMessageTime = result.messages[result.messages.length - 1].created_at;
+                    }
+                } catch (error) {
+                    console.error('Erreur polling:', error);
+                }
+            }, 5000);
+        }
+
+        // Afficher un message admin
+        function displayAdminMessage(text) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">🏫</div>
+                <div class="message-bubble" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
+                    <div style="font-weight: bold; color: #1976d2; margin-bottom: 8px; font-size: 0.9em;">
+                        🏫 MESSAGE DE L'ÉCOLE
+                    </div>
+                    <div>${escapeHtml(text)}</div>
+                </div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            scrollToBottom();
+
+            // Notification visuelle
+            if (document.hidden) {
+                document.title = '💬 Nouveau message de l\'école !';
+            }
+        }
+
+        // Remettre le titre quand l'utilisateur revient
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                document.title = 'Haniel - Ton Assistant IA';
+            }
+        });
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+
+        // Nettoyer le polling quand on quitte la page
+        window.onbeforeunload = function() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        };
+    </script>
+</body>
+</html>

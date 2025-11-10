@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Utilisateurs - SpeakFree Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-success {
+            background: #28a745;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .user-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .user-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .user-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .user-meta {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .user-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .user-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .invite-section {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .invite-link {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .user-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-actions {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/admin" class="back-link">← Retour au tableau de bord</a>
+        
+        <div class="header">
+            <h1>👥 Gestion des Utilisateurs</h1>
+            <p>Gérez les utilisateurs de votre établissement</p>
+        </div>
+
+        <div class="admin-card">
+            <!-- Statistiques -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total utilisateurs</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeUsers">0</h3>
+                    <p>Actifs</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="newUsersMonth">0</h3>
+                    <p>Nouveaux ce mois</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="usersWithReports">0</h3>
+                    <p>Avec signalements</p>
+                </div>
+            </div>
+
+            <!-- Section d'invitation -->
+            <div class="invite-section">
+                <h3>📧 Inviter des utilisateurs</h3>
+                <p>Partagez ce lien avec les membres de votre établissement pour qu'ils puissent s'inscrire directement :</p>
+                <div class="invite-link" id="inviteLink">
+                    <span id="inviteLinkText">Chargement...</span>
+                    <button class="btn copy-btn" onclick="copyInviteLink()">📋 Copier</button>
+                </div>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                    Ce lien pré-sélectionne automatiquement votre école lors de l'inscription.
+                </p>
+            </div>
+
+            <!-- Filtres -->
+            <div class="filter-section">
+                <h4 style="margin-bottom: 15px;">🔍 Filtrer les utilisateurs</h4>
+                <div class="filter-group">
+                    <select id="filterStatus" onchange="filterUsers()">
+                        <option value="">Tous les statuts</option>
+                        <option value="1">Actifs</option>
+                        <option value="0">Inactifs</option>
+                    </select>
+                    <select id="filterUserType" onchange="filterUsers()">
+                        <option value="">Tous les types</option>
+                        <option value="eleve">Élèves</option>
+                        <option value="professeur">Professeurs</option>
+                        <option value="parent">Parents</option>
+                        <option value="personnel">Personnel</option>
+                        <option value="autre">Autres</option>
+                    </select>
+                    <input type="text" id="searchUsers" placeholder="🔍 Rechercher..." onkeyup="filterUsers()">
+                </div>
+            </div>
+
+            <!-- Liste des utilisateurs -->
+            <div class="section-header">
+                <h3>👤 Utilisateurs de votre établissement</h3>
+                <div>
+                    <button class="btn btn-success" onclick="refreshUsers()">🔄 Actualiser</button>
+                </div>
+            </div>
+
+            <div id="usersList">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des utilisateurs...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAdmin = null;
+        let allUsers = [];
+        let filteredUsers = [];
+
+        // Vérifier l'authentification au chargement
+        async function checkAuthentication() {
+            const token = localStorage.getItem('adminToken');
+            
+            if (!token) {
+                window.location.href = '/admin';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/admin';
+                    return;
+                }
+
+                currentAdmin = result.admin;
+                loadUsers();
+                generateInviteLink();
+            } catch (error) {
+                console.error('Erreur lors de la vérification:', error);
+                window.location.href = '/admin';
+            }
+        }
+
+        // Charger les utilisateurs de l'école
+        async function loadUsers() {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch('/api/admin/school-users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    allUsers = result.users;
+                    filteredUsers = [...allUsers];
+                    displayUsers();
+                    updateStats();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des utilisateurs:', error);
+                document.getElementById('usersList').innerHTML = `
+                    <div class="empty-state">
+                        <p>❌ Erreur lors du chargement des utilisateurs</p>
+                        <button class="btn" onclick="loadUsers()">🔄 Réessayer</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Afficher les utilisateurs
+        function displayUsers() {
+            const usersList = document.getElementById('usersList');
+
+            if (filteredUsers.length === 0) {
+                usersList.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3em; margin-bottom: 15px;">👥</div>
+                        <h3>Aucun utilisateur trouvé</h3>
+                        <p>Aucun utilisateur ne correspond aux critères de recherche.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            usersList.innerHTML = filteredUsers.map(user => {
+                const statusClass = user.is_active ? 'status-active' : 'status-inactive';
+                const statusText = user.is_active ? 'Actif' : 'Inactif';
+                
+                return `
+                    <div class="user-item">
+                        <div class="user-header">
+                            <div class="user-info">
+                                <h4>${user.full_name}</h4>
+                                <div class="user-meta">
+                                    @${user.username} • ${getUserTypeLabel(user.user_type)}
+                                    ${user.class_level ? ` • ${user.class_level}` : ''}
+                                    • Inscrit le ${new Date(user.created_at).toLocaleDateString('fr-FR')}
+                                </div>
+                            </div>
+                            <div>
+                                <span class="user-status ${statusClass}">${statusText}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin: 10px 0;">
+                            <strong>Email :</strong> ${user.email}
+                            ${user.phone ? `<br><strong>Téléphone :</strong> ${user.phone}` : ''}
+                            ${user.last_login ? `<br><strong>Dernière connexion :</strong> ${new Date(user.last_login).toLocaleString('fr-FR')}` : '<br><em>Jamais connecté</em>'}
+                        </div>
+                        
+                        <div class="user-actions">
+                            <button class="btn" onclick="viewUserReports(${user.id})" style="padding: 8px 15px; font-size: 0.9em;">
+                                📋 Voir signalements (${user.report_count || 0})
+                            </button>
+                            ${user.is_active ? 
+                                `<button class="btn btn-danger" onclick="toggleUserStatus(${user.id}, false)" style="padding: 8px 15px; font-size: 0.9em;">🚫 Désactiver</button>` :
+                                `<button class="btn btn-success" onclick="toggleUserStatus(${user.id}, true)" style="padding: 8px 15px; font-size: 0.9em;">✅ Activer</button>`
+                            }
+                            <button class="btn btn-secondary" onclick="sendInviteReminder('${user.email}')" style="padding: 8px 15px; font-size: 0.9em;">
+                                📧 Rappel
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const total = allUsers.length;
+            const active = allUsers.filter(u => u.is_active).length;
+            const thisMonth = allUsers.filter(u => {
+                const created = new Date(u.created_at);
+                const now = new Date();
+                return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+            }).length;
+            const withReports = allUsers.filter(u => (u.report_count || 0) > 0).length;
+
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('activeUsers').textContent = active;
+            document.getElementById('newUsersMonth').textContent = thisMonth;
+            document.getElementById('usersWithReports').textContent = withReports;
+        }
+
+        // Filtrer les utilisateurs
+        function filterUsers() {
+            const statusFilter = document.getElementById('filterStatus').value;
+            const typeFilter = document.getElementById('filterUserType').value;
+            const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+
+            filteredUsers = allUsers.filter(user => {
+                const matchStatus = !statusFilter || user.is_active.toString() === statusFilter;
+                const matchType = !typeFilter || user.user_type === typeFilter;
+                const matchSearch = !searchTerm || 
+                    user.full_name.toLowerCase().includes(searchTerm) ||
+                    user.username.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm);
+                
+                return matchStatus && matchType && matchSearch;
+            });
+
+            displayUsers();
+        }
+
+        // Générer le lien d'invitation
+        function generateInviteLink() {
+            if (currentAdmin && currentAdmin.schoolId) {
+                const baseUrl = window.location.origin;
+                const inviteUrl = `${baseUrl}/register?school=${currentAdmin.schoolId}`;
+                document.getElementById('inviteLinkText').textContent = inviteUrl;
+            }
+        }
+
+        // Copier le lien d'invitation
+        function copyInviteLink() {
+            const linkText = document.getElementById('inviteLinkText').textContent;
+            navigator.clipboard.writeText(linkText).then(() => {
+                alert('✅ Lien d\'invitation copié dans le presse-papier !');
+            }).catch(() => {
+                alert('Lien d\'invitation : ' + linkText);
+            });
+        }
+
+        // Obtenir le libellé du type d'utilisateur
+        function getUserTypeLabel(userType) {
+            const labels = {
+                'eleve': '👨‍🎓 Élève',
+                'professeur': '👨‍🏫 Professeur',
+                'parent': '👪 Parent',
+                'personnel': '🏢 Personnel',
+                'autre': '👤 Autre'
+            };
+            return labels[userType] || userType;
+        }
+
+        // Voir les signalements d'un utilisateur
+        function viewUserReports(userId) {
+            // Rediriger vers une page de détails utilisateur (à implémenter)
+            alert(`Fonctionnalité à venir : voir les signalements de l'utilisateur #${userId}`);
+        }
+
+        // Activer/désactiver un utilisateur
+        async function toggleUserStatus(userId, newStatus) {
+            const action = newStatus ? 'activer' : 'désactiver';
+            
+            if (!confirm(`Êtes-vous sûr de vouloir ${action} cet utilisateur ?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`/api/admin/users/${userId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isActive: newStatus })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`✅ Utilisateur ${action} avec succès !`);
+                    loadUsers(); // Recharger la liste
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert(`❌ Erreur lors de la ${action.slice(0, -1)}ation de l'utilisateur`);
+            }
+        }
+
+        // Envoyer un rappel d'invitation
+        function sendInviteReminder(email) {
+            alert(`Fonctionnalité à venir : envoyer un rappel à ${email}`);
+        }
+
+        // Actualiser la liste
+        function refreshUsers() {
+            loadUsers();
+        }
+
+        // Initialisation
+        checkAuthentication();
+    </script>
+</body>
+</html>

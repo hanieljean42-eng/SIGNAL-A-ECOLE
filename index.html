@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeakFree - Parle librement. Protège ton école.</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.5em;
+            opacity: 0.95;
+            margin-bottom: 40px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #28a745;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: #218838;
+        }
+
+        .features {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin: 50px 0;
+            color: #333;
+        }
+
+        .features h2 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature-item .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .feature-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5em;
+            }
+
+            header p {
+                font-size: 1.2em;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu de navigation -->
+        <nav style="background: rgba(255,255,255,0.95); padding: 15px 30px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div style="font-weight: bold; font-size: 1.2em; color: #667eea;">
+                💬 SpeakFree
+            </div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                <a href="/" style="color: #667eea; text-decoration: none; font-weight: 500; transition: all 0.3s;">🏠 Accueil</a>
+                <a href="/guide" style="color: #667eea; text-decoration: none; font-weight: 500; transition: all 0.3s;">📖 Guide</a>
+                <a href="/about" style="color: #667eea; text-decoration: none; font-weight: 500; transition: all 0.3s;">ℹ️ À propos</a>
+                <a href="/terms" style="color: #667eea; text-decoration: none; font-weight: 500; transition: all 0.3s;">📜 Conditions</a>
+                <a href="/schools" style="color: #667eea; text-decoration: none; font-weight: 500; transition: all 0.3s;">🏫 Écoles</a>
+                <a href="/super-admin" style="color: #dc3545; text-decoration: none; font-weight: 600; transition: all 0.3s;">⚙️ Super Admin</a>
+            </div>
+        </nav>
+
+        <header>
+            <h1>💬 SpeakFree</h1>
+            <p>Parle librement. Protège ton école.</p>
+            <p style="font-size: 1.1em; opacity: 0.9; margin-top: 10px;">🔒 Anonyme • 🛡️ Sécurisé • ⚡ Rapide</p>
+            <p style="font-size: 1.1em; opacity: 0.85;">
+                Plateforme sécurisée pour signaler les incidents dans ton établissement
+            </p>
+        </header>
+
+        <!-- Actions Principales -->
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: 2em;">🎯 Que veux-tu faire ?</h2>
+        </div>
+
+        <div class="cards">
+            <!-- Haniel - Recommandé -->
+            <div class="card" onclick="window.location.href='/chat-ia'" style="border: 3px solid #fd7e14;">
+                <div style="position: absolute; top: 10px; right: 10px; background: #fd7e14; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8em; font-weight: bold;">⭐ RECOMMANDÉ</div>
+                <div class="card-icon">🤖</div>
+                <h2 style="color: #fd7e14;">Haniel - Assistant IA</h2>
+                <p><strong>Le plus simple !</strong> Haniel va te guider étape par étape pour créer ton signalement en discutant avec toi.</p>
+                <a href="/chat-ia" class="btn" style="background: #fd7e14; font-size: 1.2em;">🗣️ Parler avec Haniel</a>
+                <a href="/reprendre-haniel" class="btn" style="background: #764ba2; font-size: 0.95em; margin-top: 10px;">🔑 Reprendre ma conversation</a>
+            </div>
+
+            <!-- Signalement Manuel -->
+            <div class="card" onclick="window.location.href='/report'">
+                <div class="card-icon">📝</div>
+                <h2>Signalement Manuel</h2>
+                <p>Remplis toi-même le formulaire de signalement si tu préfères cette méthode.</p>
+                <a href="/report" class="btn" style="background: #667eea;">📝 Remplir le Formulaire</a>
+            </div>
+
+            <!-- Discussion -->
+            <div class="card" onclick="window.location.href='/discussion'">
+                <div class="card-icon">💬</div>
+                <h2>Accéder à une Discussion</h2>
+                <p>Tu as déjà fait un signalement ? Continue la conversation avec ton école.</p>
+                <a href="/discussion" class="btn" style="background: #6f42c1;">🔑 Entrer mes Codes</a>
+            </div>
+
+        </div>
+
+        <!-- Espace Admin -->
+        <div style="margin: 60px 0; padding: 40px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(10px);">
+            <div style="text-align: center;">
+                <h2 style="font-size: 2em; margin-bottom: 20px;">🏫 Espace Administrateur</h2>
+                <p style="font-size: 1.2em; margin-bottom: 30px; opacity: 0.9;">Vous êtes responsable d'une école ? Gérez les signalements et discussions ici.</p>
+                <a href="/login" class="btn" style="background: #28a745; font-size: 1.3em; padding: 20px 50px;">🔑 Connexion Administrateur</a>
+            </div>
+        </div>
+
+        <!-- Première fois -->
+        <div style="margin: 60px 0; text-align: center;">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">❓ Première fois ici ?</h2>
+            <p style="font-size: 1.2em; margin-bottom: 30px; opacity: 0.9;">Vous voulez inscrire votre école sur SpeakFree ?</p>
+            <a href="/register-school" class="btn" style="background: #3498db; font-size: 1.2em; padding: 18px 40px;">🏫 Inscrire mon Établissement</a>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <div class="features">
+            <h2>✨ Pourquoi SpeakFree ?</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="icon">🔒</div>
+                    <h3>100% Anonyme</h3>
+                    <p>Signale sans révéler ton identité</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon">🤖</div>
+                    <h3>Assistant IA</h3>
+                    <p>Haniel te guide dans ton signalement</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon">🛡️</div>
+                    <h3>Sécurisé</h3>
+                    <p>Données protégées et chiffrées</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon">⚡</div>
+                    <h3>Rapide</h3>
+                    <p>Traitement immédiat par l'école</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p style="font-size: 1.1em; margin-bottom: 15px;">
+                <strong>SpeakFree</strong> - Pour une école plus sûre
+            </p>
+            
+            <p style="font-size: 0.9em; opacity: 0.8;">
+                Développé par <strong>Haniel DJEBLE</strong> © 2025
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

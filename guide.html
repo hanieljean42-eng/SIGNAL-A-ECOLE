@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide d'Utilisation - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            padding-left: 30px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+
+        .important {
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #dc3545;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+
+        .info {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #17a2b8;
+            margin: 20px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: monospace;
+            margin: 15px 0;
+        }
+
+        .faq-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .emergency-box {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .emergency-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Retour à l'accueil</a>
+        
+        <div class="content">
+            <h1>📖 Guide d'Utilisation SpeakFree</h1>
+            
+            <div class="success">
+                <strong>🎯 Bienvenue sur SpeakFree !</strong><br>
+                Ce guide vous explique comment utiliser notre plateforme de signalement anonyme pour créer un environnement scolaire plus sûr en Côte d'Ivoire.
+            </div>
+
+            <h2>🚀 Démarrage Rapide</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>Signalement Anonyme</h3>
+                    <p>Signalez sans révéler votre identité</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👤</div>
+                    <h3>Compte Personnel</h3>
+                    <p>Créez un compte pour suivre vos signalements</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏫</div>
+                    <h3>Multi-Établissements</h3>
+                    <p>Chaque école a son propre espace</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Suivi en Temps Réel</h3>
+                    <p>Suivez l'évolution de vos signalements</p>
+                </div>
+            </div>
+
+            <h2>📝 Comment Faire un Signalement</h2>
+
+            <div class="step-card">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="step-number">1</span>
+                    <h3 style="margin: 0;">Choisir votre École</h3>
+                </div>
+                <p><strong>Trois options disponibles :</strong></p>
+                <ul>
+                    <li><strong>Code d'école :</strong> Saisissez le code fourni par votre administration (ex: LYC1234)</li>
+                    <li><strong>Liste existante :</strong> Sélectionnez dans la liste des écoles enregistrées</li>
+                    <li><strong>Saisie libre :</strong> Tapez le nom de votre école (elle sera créée automatiquement)</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="step-number">2</span>
+                    <h3 style="margin: 0;">Sélectionner le Mode</h3>
+                </div>
+                <p><strong>Deux modes de signalement :</strong></p>
+                <ul>
+                    <li><strong>Anonyme :</strong> Votre identité reste totalement secrète</li>
+                    <li><strong>Avec compte :</strong> Vous pouvez suivre facilement vos signalements</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="step-number">3</span>
+                    <h3 style="margin: 0;">Remplir le Formulaire</h3>
+                </div>
+                <p><strong>Informations requises :</strong></p>
+                <ul>
+                    <li><strong>Type d'utilisateur :</strong> Élève, Professeur, Parent, Personnel, Autre</li>
+                    <li><strong>Catégorie :</strong> Harcèlement, Violence, Discrimination, etc.</li>
+                    <li><strong>Niveau d'urgence :</strong> Faible, Modérée, Élevée, Critique</li>
+                    <li><strong>Titre :</strong> Résumé court du problème</li>
+                    <li><strong>Description :</strong> Détails complets de la situation</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="step-number">4</span>
+                    <h3 style="margin: 0;">Informations Complémentaires</h3>
+                </div>
+                <p><strong>Optionnel mais utile :</strong></p>
+                <ul>
+                    <li><strong>Lieu :</strong> Où s'est passé l'incident</li>
+                    <li><strong>Date :</strong> Quand cela s'est produit</li>
+                    <li><strong>Témoins :</strong> Y a-t-il eu des témoins</li>
+                    <li><strong>Première fois :</strong> Est-ce la première occurrence</li>
+                </ul>
+            </div>
+
+            <div class="step-card">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span class="step-number">5</span>
+                    <h3 style="margin: 0;">Envoyer et Suivre</h3>
+                </div>
+                <p>Après envoi, vous recevrez un <strong>code de suivi unique</strong> :</p>
+                <div class="code-example">
+                    Exemple : SF-1729123456-ABC12
+                </div>
+                <p>Conservez ce code pour suivre l'évolution de votre signalement.</p>
+            </div>
+
+            <h2>🏫 Pour les Administrations d'École</h2>
+
+            <div class="info">
+                <h3>📋 Inscription de votre Établissement</h3>
+                <ol>
+                    <li>Rendez-vous sur la page d'inscription école</li>
+                    <li>Remplissez toutes les informations de votre établissement</li>
+                    <li>Votre école et votre compte administrateur sont créés immédiatement</li>
+                    <li>Vous recevez un <strong>code d'école unique</strong> (ex: LYC1234)</li>
+                    <li>Communiquez ce code à vos élèves, professeurs et parents</li>
+                </ol>
+            </div>
+
+            <div class="highlight">
+                <h3>🔑 Gestion de votre École</h3>
+                <p><strong>Avec votre compte administrateur, vous pouvez :</strong></p>
+                <ul>
+                    <li>Voir tous les signalements de votre établissement</li>
+                    <li>Répondre de manière anonyme aux signaleurs</li>
+                    <li>Gérer les utilisateurs de votre école</li>
+                    <li>Générer des liens d'invitation pour vos membres</li>
+                    <li>Consulter les statistiques détaillées</li>
+                    <li>Exporter les données pour analyse</li>
+                </ul>
+            </div>
+
+            <h2>👥 Création de Compte Utilisateur</h2>
+
+            <div class="step-card">
+                <h3>🆕 Inscription Normale</h3>
+                <ol>
+                    <li>Cliquez sur "Inscription" depuis la page d'accueil</li>
+                    <li>Choisissez votre mode de sélection d'école</li>
+                    <li>Remplissez vos informations personnelles</li>
+                    <li>Créez votre compte</li>
+                    <li>Connectez-vous pour accéder à vos fonctionnalités</li>
+                </ol>
+            </div>
+
+            <div class="step-card">
+                <h3>📧 Inscription par Invitation</h3>
+                <ol>
+                    <li>Cliquez sur le lien d'invitation de votre administration</li>
+                    <li>Votre école est automatiquement pré-sélectionnée</li>
+                    <li>Remplissez vos informations</li>
+                    <li>Votre compte est lié à votre établissement</li>
+                </ol>
+            </div>
+
+            <h2>📊 Suivi de vos Signalements</h2>
+
+            <div class="info">
+                <h3>🔍 Avec votre Code de Suivi</h3>
+                <p>Utilisez la section "Suivre" pour :</p>
+                <ul>
+                    <li>Voir le statut actuel de votre signalement</li>
+                    <li>Lire les réponses de l'administration</li>
+                    <li>Suivre l'évolution du traitement</li>
+                    <li>Recevoir des mises à jour</li>
+                </ul>
+            </div>
+
+            <div class="info">
+                <h3>👤 Avec votre Compte Personnel</h3>
+                <p>Dans votre profil, vous pouvez :</p>
+                <ul>
+                    <li>Voir tous vos signalements en un coup d'œil</li>
+                    <li>Accéder rapidement aux détails</li>
+                    <li>Recevoir des notifications</li>
+                    <li>Gérer vos préférences</li>
+                </ul>
+            </div>
+
+            <h2>🛡️ Sécurité et Anonymat</h2>
+
+            <div class="success">
+                <h3>🔒 Protection de votre Anonymat</h3>
+                <ul>
+                    <li><strong>Aucune donnée personnelle</strong> n'est collectée pour les signalements anonymes</li>
+                    <li><strong>Chiffrement</strong> de toutes les communications</li>
+                    <li><strong>Codes de suivi</strong> impossibles à relier à votre identité</li>
+                    <li><strong>Serveurs sécurisés</strong> protégeant vos données</li>
+                </ul>
+            </div>
+
+            <div class="important">
+                <h3>⚠️ Cas Exceptionnels</h3>
+                <p>Dans des situations très graves (crimes, danger imminent, déstabilisation), l'administration peut demander la révélation de l'identité, conformément à la loi ivoirienne.</p>
+            </div>
+
+            <h2>❓ Questions Fréquentes</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Mes signalements sont-ils vraiment anonymes ?</div>
+                <p>R: Oui, pour les signalements anonymes, aucune information permettant de vous identifier n'est collectée. Seul le contenu de votre signalement est transmis à l'administration.</p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Que se passe-t-il après mon signalement ?</div>
+                <p>R: Votre signalement est immédiatement transmis à l'administration de votre école. Vous recevez un code de suivi pour suivre l'évolution du traitement.</p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Puis-je modifier mon signalement après l'avoir envoyé ?</div>
+                <p>R: Non, les signalements ne peuvent pas être modifiés après envoi. Cependant, vous pouvez faire un nouveau signalement avec des informations complémentaires.</p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Mon école n'est pas dans la liste, que faire ?</div>
+                <p>R: Choisissez "Saisir le nom de mon école" et tapez le nom de votre établissement. Il sera automatiquement créé dans le système.</p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Combien de temps pour avoir une réponse ?</div>
+                <p>R: Cela dépend de votre école et de la gravité du signalement. Les cas urgents sont traités en priorité. Vous pouvez suivre l'évolution avec votre code.</p>
+            </div>
+
+            <div class="emergency-box">
+                <h3>🚨 URGENCE</h3>
+                <p><strong>En cas de danger immédiat :</strong></p>
+                <p>📞 Police : <strong>110 ou 111</strong></p>
+                <p>🚑 SAMU : <strong>185</strong></p>
+                <p>🆘 SOS Violence : <strong>1308</strong> (gratuit)</p>
+                <p><em>N'hésitez pas à appeler les secours en plus de faire un signalement sur SpeakFree</em></p>
+            </div>
+
+            <h2>📞 Support et Contact</h2>
+
+            <div class="info">
+                <h3>🤝 Besoin d'Aide ?</h3>
+                <p><strong>Pour toute question technique ou d'utilisation :</strong></p>
+                <ul>
+                    <li><strong>Email :</strong> speakfreee00@gmail.com</li>
+                    <li><strong>Développeur :</strong> Haniel DJEBLE</li>
+                    <li><strong>Localisation :</strong> Abidjan, Côte d'Ivoire</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <h3>🌟 Ensemble pour un Environnement Scolaire Plus Sûr</h3>
+                <p>SpeakFree vous donne la voix pour améliorer votre environnement éducatif. Chaque signalement compte pour créer des écoles plus sûres et plus respectueuses en Côte d'Ivoire.</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; color: #666;">
+                <p><strong>Version du guide :</strong> 1.0 | <strong>Dernière mise à jour :</strong> 23 octobre 2025</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

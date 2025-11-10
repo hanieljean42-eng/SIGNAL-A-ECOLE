@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signalement Urgent - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #dc3545 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+        }
+
+        .alert-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .alert-icon {
+            font-size: 5em;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .alert-header h1 {
+            color: #dc3545;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .warning-box ul {
+            color: #856404;
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .urgent-info {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .urgent-info h3 {
+            color: #721c24;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #dc3545;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            margin: 20px 0;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 10px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .contact-section {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+
+        .contact-section h3 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Retour à l'accueil</a>
+
+        <div class="alert-header">
+            <div class="alert-icon">🚨</div>
+            <h1>Signalement d'Urgence</h1>
+            <p>Pour les situations graves nécessitant une intervention immédiate</p>
+        </div>
+
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+
+        <div class="card">
+            <div class="urgent-info">
+                <h3>⚠️ Quand utiliser ce formulaire ?</h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Danger imminent</strong> pour une personne</li>
+                    <li><strong>Violence grave</strong> en cours ou récente</li>
+                    <li><strong>Menaces sérieuses</strong> de passage à l'acte</li>
+                    <li><strong>Situation d'urgence</strong> nécessitant une action rapide</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>🔒 Votre Sécurité Avant Tout</h3>
+                <ul>
+                    <li>Vous pouvez rester anonyme si vous le souhaitez</li>
+                    <li>Laisser vos coordonnées permet une intervention plus rapide</li>
+                    <li>Vos informations seront protégées et confidentielles</li>
+                    <li>Seuls les administrateurs autorisés y auront accès</li>
+                </ul>
+            </div>
+
+            <form id="urgentReportForm">
+                <!-- Code École -->
+                <div class="form-group">
+                    <label>Code de ton école <span class="required">*</span></label>
+                    <input type="text" name="schoolCode" placeholder="Ex: ECO3847" required>
+                    <small>Demande le code à ton administration si tu ne l'as pas</small>
+                </div>
+
+                <!-- Type d'incident -->
+                <div class="form-group">
+                    <label>Type d'incident grave <span class="required">*</span></label>
+                    <select name="reportType" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="violence">Violence physique grave</option>
+                        <option value="harcelement">Harcèlement sévère et répété</option>
+                        <option value="drogue">Trafic ou consommation de drogue</option>
+                        <option value="arme">Possession d'arme</option>
+                        <option value="menace">Menaces graves</option>
+                        <option value="abus">Abus (physique, sexuel, psychologique)</option>
+                        <option value="autre">Autre situation d'urgence</option>
+                    </select>
+                </div>
+
+                <!-- Description détaillée -->
+                <div class="form-group">
+                    <label>Description détaillée de la situation <span class="required">*</span></label>
+                    <textarea name="description" placeholder="Décris en détail ce qui se passe, qui est impliqué, où et quand. Plus tu donnes de détails, plus l'intervention sera efficace." required minlength="50"></textarea>
+                    <small>Minimum 50 caractères - Sois précis et détaillé</small>
+                </div>
+
+                <!-- Lieu -->
+                <div class="form-group">
+                    <label>Lieu précis de l'incident <span class="required">*</span></label>
+                    <input type="text" name="location" placeholder="Ex: Toilettes du bâtiment B, Cour de récréation près du gymnase" required>
+                </div>
+
+                <!-- Moment -->
+                <div class="form-group">
+                    <label>Quand cela s'est-il passé / se passe-t-il ? <span class="required">*</span></label>
+                    <select name="timing" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="en-cours">En ce moment même</option>
+                        <option value="aujourd-hui">Aujourd'hui</option>
+                        <option value="hier">Hier</option>
+                        <option value="cette-semaine">Cette semaine</option>
+                        <option value="recurrent">C'est récurrent</option>
+                    </select>
+                </div>
+
+                <!-- Personnes impliquées -->
+                <div class="form-group">
+                    <label>Nombre de personnes impliquées</label>
+                    <input type="number" name="personsInvolved" min="1" placeholder="Ex: 3">
+                </div>
+
+                <!-- Contact Section -->
+                <div class="contact-section">
+                    <h3>📞 Informations de Contact (Optionnel mais Recommandé)</h3>
+                    <p style="color: #155724; margin-bottom: 15px;">
+                        Laisser tes coordonnées permet aux autorités de te contacter rapidement pour agir efficacement.
+                        <strong>Elles resteront strictement confidentielles.</strong>
+                    </p>
+
+                    <div class="checkbox-group" style="background: white; border-color: #28a745;">
+                        <label>
+                            <input type="checkbox" id="provideContact" onchange="toggleContactFields()">
+                            <span style="font-weight: bold;">Je veux laisser mes coordonnées pour une intervention plus rapide</span>
+                        </label>
+                    </div>
+
+                    <div id="contactFields" style="display: none;">
+                        <div class="form-group">
+                            <label>Ton prénom (ou pseudonyme)</label>
+                            <input type="text" name="contactName" placeholder="Ex: Ahmed ou utilisez un pseudonyme">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Numéro de téléphone</label>
+                            <input type="tel" name="contactPhone" placeholder="Ex: 0718431255">
+                            <small>Pour que les autorités puissent te contacter rapidement</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email (optionnel)</label>
+                            <input type="email" name="contactEmail" placeholder="ton.email@exemple.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Meilleur moment pour te contacter</label>
+                            <select name="contactTime">
+                                <option value="">-- Sélectionner --</option>
+                                <option value="matin">Matin (8h-12h)</option>
+                                <option value="apres-midi">Après-midi (12h-17h)</option>
+                                <option value="soir">Soir (17h-20h)</option>
+                                <option value="urgence">À tout moment (urgence)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Témoin -->
+                <div class="form-group">
+                    <label>Y a-t-il des témoins ?</label>
+                    <select name="witnesses">
+                        <option value="">-- Sélectionner --</option>
+                        <option value="oui">Oui, plusieurs personnes ont vu</option>
+                        <option value="quelques">Quelques personnes</option>
+                        <option value="non">Non, je suis le seul témoin</option>
+                        <option value="incertain">Je ne sais pas</option>
+                    </select>
+                </div>
+
+                <!-- Confirmation -->
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="confirmUrgent" required>
+                        <span>Je confirme qu'il s'agit d'une <strong>situation grave et urgente</strong> nécessitant une attention immédiate</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    🚨 Envoyer le Signalement d'Urgence
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('urgentReportForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        function toggleContactFields() {
+            const checkbox = document.getElementById('provideContact');
+            const fields = document.getElementById('contactFields');
+            fields.style.display = checkbox.checked ? 'block' : 'none';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            const formData = new FormData(form);
+            const provideContact = document.getElementById('provideContact').checked;
+
+            // Validation
+            const schoolCode = formData.get('schoolCode')?.trim();
+            const description = formData.get('description')?.trim();
+
+            if (!schoolCode || schoolCode.length < 3) {
+                errorMessage.innerHTML = `
+                    <h3>❌ Code d'école requis</h3>
+                    <p>Entre le code de ton école (ex: ECO3847)</p>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            if (!description || description.length < 50) {
+                errorMessage.innerHTML = `
+                    <h3>❌ Description trop courte</h3>
+                    <p>Pour une intervention efficace, décris la situation en détail (minimum 50 caractères)</p>
+                    <p>Actuellement: ${description.length} caractères</p>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            if (!document.getElementById('confirmUrgent').checked) {
+                errorMessage.innerHTML = `
+                    <h3>⚠️ Confirmation requise</h3>
+                    <p>Tu dois confirmer qu'il s'agit d'une situation urgente</p>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Envoi en cours...';
+
+            const data = {
+                schoolCode: schoolCode.toUpperCase(),
+                reportType: formData.get('reportType'),
+                category: formData.get('reportType'),
+                severity: 'critique',
+                urgency: 'critique',
+                title: `URGENT - ${formData.get('reportType')}`,
+                description: description,
+                message: description,
+                location: formData.get('location') || 'Non précisé',
+                timing: formData.get('timing'),
+                personsInvolved: formData.get('personsInvolved'),
+                witnesses: formData.get('witnesses'),
+                isAnonymous: !provideContact,
+                isUrgent: true,
+                priority: 'critical'
+            };
+
+            // Ajouter les coordonnées si fournies
+            if (provideContact) {
+                data.contactInfo = {
+                    name: formData.get('contactName'),
+                    phone: formData.get('contactPhone'),
+                    email: formData.get('contactEmail'),
+                    contactTime: formData.get('contactTime')
+                };
+            }
+
+            console.log('📤 Envoi signalement urgent:', data);
+
+            try {
+                const response = await fetch('/api/reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    form.style.display = 'none';
+                    successMessage.innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 4em; margin-bottom: 20px;">✅</div>
+                            <h2 style="color: #28a745; margin-bottom: 20px;">Signalement d'Urgence Envoyé !</h2>
+                            <div style="background: white; padding: 25px; border-radius: 10px; margin: 20px 0;">
+                                <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>Code de suivi prioritaire :</strong></p>
+                                <p style="font-family: monospace; font-size: 2em; color: #dc3545; font-weight: bold; letter-spacing: 3px;">🚨 ${result.reportCode}</p>
+                                <button onclick="copyCode('${result.reportCode}')" style="margin-top: 15px; padding: 10px 25px; background: #dc3545; color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">
+                                    📋 Copier le Code
+                                </button>
+                            </div>
+                            <div style="background: #f8d7da; padding: 20px; border-radius: 10px; color: #721c24; text-align: left; border-left: 4px solid #dc3545;">
+                                <h4 style="margin-bottom: 10px;">🚨 Traitement Prioritaire :</h4>
+                                <ol style="margin-left: 20px; line-height: 2;">
+                                    <li><strong>Les administrateurs sont alertés immédiatement</strong></li>
+                                    <li>Ton signalement est marqué comme <strong>URGENT</strong></li>
+                                    <li>${provideContact ? 'Tu seras contacté rapidement' : 'Suis l\'évolution avec ton code'}</li>
+                                    <li>Une réponse sera apportée dans les <strong>plus brefs délais</strong></li>
+                                </ol>
+                            </div>
+                            ${provideContact ? `
+                            <div style="background: #d4edda; padding: 20px; border-radius: 10px; margin-top: 20px; color: #155724; text-align: left; border-left: 4px solid #28a745;">
+                                <h4>📞 Coordonnées enregistrées</h4>
+                                <p>Les autorités peuvent maintenant te contacter pour intervenir rapidement.</p>
+                            </div>
+                            ` : ''}
+                            <div style="margin-top: 25px;">
+                                <a href="/" style="display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 25px; font-weight: bold; margin-right: 10px;">
+                                    🏠 Retour à l'Accueil
+                                </a>
+                                <a href="/track-report" style="display: inline-block; padding: 12px 30px; background: #17a2b8; color: white; text-decoration: none; border-radius: 25px; font-weight: bold;">
+                                    🔍 Suivre mon Signalement
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    successMessage.style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    throw new Error(result.message || 'Erreur lors de l\'envoi');
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                
+                errorMessage.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">❌</div>
+                        <h3 style="margin-bottom: 15px; color: #dc3545;">Signalement NON Envoyé</h3>
+                        <p style="font-size: 1.1em; margin: 20px 0;">${error.message}</p>
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left;">
+                            <strong style="color: #333;">💡 En cas d'urgence absolue :</strong>
+                            <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+                                <li>Contacte directement l'administration de ton école</li>
+                                <li>Appelle le 185 (Police/Secours)</li>
+                                <li>Parle à un adulte de confiance</li>
+                            </ul>
+                        </div>
+                        <button onclick="location.reload()" style="margin-top: 15px; padding: 12px 30px; background: #dc3545; color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1em;">
+                            🔄 Réessayer
+                        </button>
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚨 Envoyer le Signalement d\'Urgence';
+            }
+        });
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ Code copié : ' + code);
+            }).catch(() => {
+                alert('Code : ' + code + '\n\nCopie-le manuellement.');
+            });
+        }
+    </script>
+</body>
+</html>

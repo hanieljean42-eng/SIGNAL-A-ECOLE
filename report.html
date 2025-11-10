@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faire un Signalement - SpeakFree</title>
+    <!-- Face Detection Library -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #cfe2ff;
+            border: 2px solid #0d6efd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #084298;
+        }
+
+        .alert-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .alert-info ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .anonymous-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .anonymous-note strong {
+            color: #856404;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-area:hover {
+            background: #e9ecef;
+            border-color: #764ba2;
+        }
+
+        .file-upload-area.dragover {
+            background: #d4edff;
+            border-color: #007bff;
+        }
+
+        .file-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .file-item {
+            position: relative;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .file-remove {
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.3em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s;
+            background: white;
+            border: 2px solid #dc3545;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            min-height: 40px;
+        }
+
+        .file-remove:hover {
+            background: #dc3545;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .file-remove:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 Faire un Signalement</h1>
+            <p style="font-size: 1.2em; opacity: 0.95;">
+                Signale de manière anonyme et sécurisée
+            </p>
+        </div>
+
+        <!-- Messages -->
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+
+        <!-- Informations -->
+        <div class="card">
+            <div class="alert-info">
+                <h3>🔒 100% Anonyme et Sécurisé</h3>
+                <ul>
+                    <li>✅ Ton identité reste secrète</li>
+                    <li>✅ Aucune information personnelle n'est enregistrée</li>
+                    <li>✅ Seuls les administrateurs de ton école voient ton signalement</li>
+                    <li>✅ Tu recevras un code pour suivre ton signalement</li>
+                </ul>
+            </div>
+
+            <form id="reportForm">
+                <!-- Code École -->
+                <div class="form-group">
+                    <label>Code de ton école <span class="required">*</span></label>
+                    <input type="text" name="schoolCode" placeholder="Ex: LYC1234" required>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Demande le code à ton administration si tu ne l'as pas
+                    </small>
+                </div>
+
+                <!-- Type d'incident -->
+                <div class="form-group">
+                    <label>Type d'incident <span class="required">*</span></label>
+                    <select name="reportType" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="harcelement">Harcèlement</option>
+                        <option value="violence">Violence</option>
+                        <option value="vol">Vol</option>
+                        <option value="discrimination">Discrimination</option>
+                        <option value="drogue">Drogue / Substances</option>
+                        <option value="securite">Problème de sécurité</option>
+                        <option value="hygiene">Problème d'hygiène</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+
+                <!-- Gravité -->
+                <div class="form-group">
+                    <label>Gravité <span class="required">*</span></label>
+                    <select name="severity" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="faible">Faible</option>
+                        <option value="moyen">Moyenne</option>
+                        <option value="eleve">Élevée</option>
+                        <option value="critique">Critique / Urgente</option>
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label>Description détaillée <span class="required">*</span></label>
+                    <textarea name="description" placeholder="Décris ce qui s'est passé : quand, où, qui était impliqué (sans donner ton nom)..." required minlength="20"></textarea>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Minimum 20 caractères pour bien expliquer la situation
+                    </small>
+                </div>
+
+                <!-- Lieu -->
+                <div class="form-group">
+                    <label>Lieu de l'incident</label>
+                    <input type="text" name="location" placeholder="Ex: Cour de récréation, Salle 205, Toilettes, etc.">
+                </div>
+
+                <!-- CAPTURE PHOTO OBLIGATOIRE -->
+                <div class="form-group">
+                    <label>📸 Photo de ton visage <span class="required">*</span> <span style="font-weight: normal; font-size: 0.9em;">(Obligatoire)</span></label>
+                    
+                    <!-- Message de protection de l'identité -->
+                    <div style="background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: start; gap: 10px;">
+                            <span style="font-size: 1.5em;">🛡️</span>
+                            <div>
+                                <strong style="color: #0066cc;">Protection de ton identité</strong>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #555; line-height: 1.5;">
+                                    Ta photo est strictement confidentielle et protégée. <strong>Ton identité ne sera révélée QUE dans des cas TRÈS GRAVES</strong> 
+                                    (danger immédiat, violence physique, etc.) et UNIQUEMENT après approbation par un super-administrateur indépendant. 
+                                    <br><br>
+                                    ✅ Pour 99% des signalements, ton identité reste <strong>100% anonyme</strong><br>
+                                    ✅ La photo n'est jamais partagée publiquement<br>
+                                    ✅ Accès ultra-restreint (protection maximale)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="cameraSection">
+                        <button type="button" class="btn" id="startCameraBtn" style="width: 100%; background: #4CAF50; margin-bottom: 15px;">
+                            📷 Prendre ma photo maintenant
+                        </button>
+                        
+                        <!-- Zone caméra (cachée au début) -->
+                        <div id="cameraContainer" style="display: none;">
+                            <video id="camera" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 10px; border: 3px solid #667eea; display: block; margin: 0 auto;"></video>
+                            <div style="text-align: center; margin: 15px 0;">
+                                <p style="color: #666; font-size: 0.9em;">👤 Positionne ton visage dans le cadre</p>
+                                <button type="button" class="btn" id="captureBtn" style="background: #2196F3;">
+                                    📸 Capturer
+                                </button>
+                                <button type="button" class="btn" id="cancelCameraBtn" style="background: #6c757d; margin-left: 10px;">
+                                    ❌ Annuler
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Aperçu de la photo capturée -->
+                        <div id="photoPreview" style="display: none; text-align: center;">
+                            <p style="color: #28a745; font-weight: bold; margin-bottom: 10px;">✅ Photo capturée avec succès !</p>
+                            <canvas id="photoCanvas" style="max-width: 300px; border-radius: 10px; border: 3px solid #28a745; margin: 0 auto;"></canvas>
+                            <div style="margin-top: 15px;">
+                                <button type="button" class="btn" id="retakeBtn" style="background: #ffc107;">
+                                    🔄 Reprendre la photo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <small style="color: #666; display: block; margin-top: 10px;">
+                        ⚠️ Tu dois prendre une nouvelle photo maintenant (impossible d'utiliser une photo existante)
+                    </small>
+                </div>
+
+                <!-- Upload de fichiers (preuves) -->
+                <div class="form-group">
+                    <label>📎 Preuves supplémentaires (Photos/Vidéos - Optionnel)</label>
+                    <div class="file-upload-area" id="uploadArea">
+                        <div style="font-size: 2.5em; margin-bottom: 10px;">📷</div>
+                        <p style="font-weight: bold; margin-bottom: 5px;">Ajouter des preuves (captures, vidéos, etc.)</p>
+                        <p style="font-size: 0.9em; color: #666;">Clique ici ou glisse tes fichiers</p>
+                        <p style="font-size: 0.85em; color: #999; margin-top: 10px;">Formats acceptés : JPG, PNG, GIF, MP4, MOV (Max 50 MB par fichier)</p>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                    <div class="file-preview" id="filePreview"></div>
+                    <small style="color: #666; display: block; margin-top: 10px;">
+                        👉 Les preuves peuvent aider l'école à mieux comprendre la situation
+                    </small>
+                </div>
+
+                <!-- Informations optionnelles -->
+                <div class="form-group">
+                    <label>👤 Informations personnelles (Optionnel)</label>
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin: 0; font-size: 0.9em; color: #856404;">
+                            ℹ️ Si tu souhaites être contacté directement par l'école, tu peux fournir ton nom et ta classe. 
+                            <strong>Ceci reste optionnel et ne change rien à la confidentialité de ta photo.</strong>
+                        </p>
+                    </div>
+                    <input type="text" name="reporterName" placeholder="Ton nom complet (optionnel)" style="margin-bottom: 10px;">
+                    <input type="text" name="reporterClass" placeholder="Ta classe (ex: 3ème A, Seconde B)" style="margin-bottom: 10px;">
+                </div>
+
+                <!-- Note anonymat -->
+                <div class="anonymous-note">
+                    <strong>🔒 Rappel :</strong> Ton signalement reste confidentiel. 
+                    Ne donne PAS ton nom dans la description du signalement.
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    📤 Envoyer le Signalement
+                </button>
+            </form>
+        </div>
+
+        <div style="text-align: center; color: white; margin-top: 30px;">
+            <a href="/" style="color: white; text-decoration: none; font-weight: 600;">
+                ← Retour à l'accueil
+            </a>
+            <p style="font-size: 0.9em; opacity: 0.9; margin-top: 20px;">
+                SpeakFree - Développé par Haniel DJEBLE © 2025
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('reportForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        let selectedFiles = [];
+
+        // ========== GESTION CAMÉRA ET PHOTO ==========
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const cameraContainer = document.getElementById('cameraContainer');
+        const camera = document.getElementById('camera');
+        const captureBtn = document.getElementById('captureBtn');
+        const cancelCameraBtn = document.getElementById('cancelCameraBtn');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoCanvas = document.getElementById('photoCanvas');
+        const retakeBtn = document.getElementById('retakeBtn');
+        
+        let stream = null;
+        let facePhotoBlob = null;
+        let faceDetectionModelsLoaded = false;
+
+        // Charger les modèles de détection de visage
+        async function loadFaceDetectionModels() {
+            if (faceDetectionModelsLoaded) return true;
+            
+            try {
+                console.log('🤖 Chargement des modèles de détection de visage...');
+                const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
+                ]);
+                
+                faceDetectionModelsLoaded = true;
+                console.log('✅ Modèles de détection chargés');
+                return true;
+            } catch (error) {
+                console.error('❌ Erreur chargement modèles:', error);
+                return false;
+            }
+        }
+
+        // Détecter un visage dans l'image
+        async function detectFaceInImage(canvas) {
+            try {
+                console.log('🔍 Détection de visage en cours...');
+                
+                const detections = await faceapi.detectAllFaces(
+                    canvas,
+                    new faceapi.TinyFaceDetectorOptions({
+                        inputSize: 320,
+                        scoreThreshold: 0.5
+                    })
+                ).withFaceLandmarks();
+                
+                console.log('Visages détectés:', detections.length);
+                
+                if (detections.length === 0) {
+                    return {
+                        success: false,
+                        message: '❌ Aucun visage détecté dans la photo.\n\nAssure-toi que :\n• Ton visage est bien visible\n• Tu es face à la caméra\n• L\'éclairage est suffisant\n• Ton visage n\'est pas caché (masque, cache, etc.)'
+                    };
+                }
+                
+                if (detections.length > 1) {
+                    return {
+                        success: false,
+                        message: '❌ Plusieurs visages détectés.\n\nPour la sécurité, ta photo ne doit montrer que TON visage uniquement.'
+                    };
+                }
+                
+                // Vérifier que le visage est assez grand (pas trop loin)
+                const detection = detections[0];
+                const faceArea = detection.detection.box.width * detection.detection.box.height;
+                const imageArea = canvas.width * canvas.height;
+                const faceRatio = faceArea / imageArea;
+                
+                console.log('Ratio visage/image:', (faceRatio * 100).toFixed(2) + '%');
+                
+                if (faceRatio < 0.05) {
+                    return {
+                        success: false,
+                        message: '❌ Ton visage est trop petit ou trop éloigné.\n\nRapproche-toi de la caméra pour que ton visage soit bien visible.'
+                    };
+                }
+                
+                return {
+                    success: true,
+                    message: '✅ Visage détecté et validé !',
+                    detection: detection
+                };
+                
+            } catch (error) {
+                console.error('❌ Erreur détection visage:', error);
+                return {
+                    success: false,
+                    message: '❌ Erreur lors de la vérification du visage. Réessaye.'
+                };
+            }
+        }
+
+        // Démarrer la caméra
+        startCameraBtn.addEventListener('click', async function() {
+            try {
+                console.log('📷 Demande d\'accès à la caméra...');
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    } 
+                });
+                
+                camera.srcObject = stream;
+                cameraContainer.style.display = 'block';
+                startCameraBtn.style.display = 'none';
+                console.log('✅ Caméra activée');
+            } catch (error) {
+                console.error('❌ Erreur caméra:', error);
+                alert('❌ Impossible d\'accéder à la caméra. Vérifie les autorisations de ton navigateur.');
+            }
+        });
+
+        // Capturer la photo
+        captureBtn.addEventListener('click', async function() {
+            console.log('📸 Capture de la photo...');
+            
+            // Désactiver le bouton pendant le traitement
+            captureBtn.disabled = true;
+            captureBtn.textContent = '⏳ Vérification...';
+            
+            const canvas = photoCanvas;
+            const context = canvas.getContext('2d');
+            
+            // Définir les dimensions
+            canvas.width = camera.videoWidth;
+            canvas.height = camera.videoHeight;
+            
+            // Dessiner l'image
+            context.drawImage(camera, 0, 0, canvas.width, canvas.height);
+            
+            // Charger les modèles si nécessaire
+            const modelsLoaded = await loadFaceDetectionModels();
+            if (!modelsLoaded) {
+                alert('❌ Erreur de chargement des modèles de détection. Réessaye.');
+                captureBtn.disabled = false;
+                captureBtn.textContent = '📸 Capturer';
+                return;
+            }
+            
+            // Détecter le visage
+            const faceDetectionResult = await detectFaceInImage(canvas);
+            
+            if (!faceDetectionResult.success) {
+                // Aucun visage détecté ou visage invalide
+                alert(faceDetectionResult.message);
+                captureBtn.disabled = false;
+                captureBtn.textContent = '📸 Capturer';
+                return;
+            }
+            
+            // Visage validé ! Continuer
+            console.log('✅ Visage validé:', faceDetectionResult.message);
+            
+            // Convertir en blob
+            canvas.toBlob(function(blob) {
+                facePhotoBlob = blob;
+                console.log('✅ Photo capturée:', (blob.size / 1024).toFixed(2), 'KB');
+                
+                // Arrêter la caméra
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                
+                // Afficher l'aperçu
+                cameraContainer.style.display = 'none';
+                photoPreview.style.display = 'block';
+                
+                // Réactiver le bouton
+                captureBtn.disabled = false;
+                captureBtn.textContent = '📸 Capturer';
+                
+            }, 'image/jpeg', 0.8);
+        });
+
+        // Annuler la caméra
+        cancelCameraBtn.addEventListener('click', function() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            cameraContainer.style.display = 'none';
+            startCameraBtn.style.display = 'block';
+        });
+
+        // Reprendre la photo
+        retakeBtn.addEventListener('click', function() {
+            facePhotoBlob = null;
+            photoPreview.style.display = 'none';
+            startCameraBtn.style.display = 'block';
+        });
+
+        // Click sur la zone d'upload
+        uploadArea.addEventListener('click', function() {
+            console.log('📂 Zone d\'upload cliquée');
+            fileInput.click();
+        });
+
+        // Gestion de la sélection de fichiers
+        fileInput.addEventListener('change', function(event) {
+            console.log('📁 Fichiers sélectionnés:', event.target.files.length);
+            const files = Array.from(event.target.files);
+            addFiles(files);
+        });
+
+        // Gestion du drag & drop
+        uploadArea.addEventListener('dragover', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.classList.remove('dragover');
+            
+            console.log('📥 Fichiers déposés');
+            const files = Array.from(event.dataTransfer.files);
+            addFiles(files);
+        });
+
+        // Ajouter des fichiers
+        function addFiles(files) {
+            console.log('📎 Tentative d\'ajout de', files.length, 'fichier(s)');
+            
+            if (files.length === 0) {
+                console.log('⚠️ Aucun fichier à ajouter');
+                return;
+            }
+
+            let addedCount = 0;
+            for (const file of files) {
+                console.log('🔍 Vérification fichier:', file.name, 'Type:', file.type, 'Taille:', (file.size / 1024 / 1024).toFixed(2), 'MB');
+                
+                // Vérifier le type de fichier
+                if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+                    alert(`❌ ${file.name} n'est pas une image ou une vidéo`);
+                    console.log('❌ Type de fichier refusé:', file.type);
+                    continue;
+                }
+
+                // Vérifier la taille (max 50 MB)
+                if (file.size > 50 * 1024 * 1024) {
+                    alert(`❌ ${file.name} est trop volumineux (max 50 MB)`);
+                    console.log('❌ Fichier trop grand:', (file.size / 1024 / 1024).toFixed(2), 'MB');
+                    continue;
+                }
+
+                selectedFiles.push(file);
+                addedCount++;
+                console.log('✅ Fichier ajouté:', file.name);
+            }
+
+            console.log('📊 Total fichiers ajoutés:', addedCount, '| Total sélectionnés:', selectedFiles.length);
+            displayFiles();
+        }
+
+        // Afficher les fichiers sélectionnés
+        function displayFiles() {
+            const preview = document.getElementById('filePreview');
+            preview.innerHTML = '';
+
+            if (selectedFiles.length === 0) {
+                console.log('📋 Aucun fichier à afficher');
+                // Réinitialiser l'input file
+                fileInput.value = '';
+                return;
+            }
+
+            console.log('📋 Affichage de', selectedFiles.length, 'fichier(s)');
+
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                const icon = file.type.startsWith('image/') ? '🖼️' : '🎥';
+                const sizeKB = (file.size / 1024).toFixed(1);
+                const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                const size = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+
+                // Créer les éléments
+                const iconSpan = document.createElement('span');
+                iconSpan.textContent = icon;
+                iconSpan.style.fontSize = '1.5em';
+
+                const infoDiv = document.createElement('div');
+                infoDiv.style.flex = '1';
+                infoDiv.innerHTML = `
+                    <div style="font-weight: bold; font-size: 0.9em;">${file.name}</div>
+                    <div style="font-size: 0.8em; color: #666;">${size}</div>
+                `;
+
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'file-remove';
+                removeBtn.textContent = '❌';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.title = 'Supprimer ce fichier';
+                removeBtn.setAttribute('data-index', index);
+                
+                // Ajouter l'event listener pour la suppression
+                removeBtn.addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-index'));
+                    console.log('🗑️ Suppression du fichier index:', idx, '- Nom:', selectedFiles[idx].name);
+                    removeFile(idx);
+                });
+
+                fileItem.appendChild(iconSpan);
+                fileItem.appendChild(infoDiv);
+                fileItem.appendChild(removeBtn);
+
+                preview.appendChild(fileItem);
+            });
+
+            console.log('✅ Affichage terminé');
+        }
+
+        // Retirer un fichier
+        function removeFile(index) {
+            if (index < 0 || index >= selectedFiles.length) {
+                console.error('❌ Index invalide:', index);
+                return;
+            }
+
+            const removedFile = selectedFiles[index];
+            console.log('🗑️ Suppression de:', removedFile.name);
+            
+            selectedFiles.splice(index, 1);
+            console.log('📊 Fichiers restants:', selectedFiles.length);
+            
+            // Réafficher la liste
+            displayFiles();
+            
+            // Message de confirmation
+            if (selectedFiles.length === 0) {
+                console.log('✅ Tous les fichiers ont été supprimés');
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Masquer messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            // Récupérer données
+            const formData = new FormData(form);
+            const schoolCode = formData.get('schoolCode')?.trim();
+            const reportType = formData.get('reportType');
+            const severity = formData.get('severity');
+            const description = formData.get('description')?.trim();
+            
+            // Validation côté client
+            if (!schoolCode || schoolCode.length < 3) {
+                errorMessage.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
+                        <h3 style="margin-bottom: 15px;">Code d'école requis</h3>
+                        <p>Entre le code de ton école (ex: ECO3847)</p>
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            
+            if (!reportType) {
+                errorMessage.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
+                        <h3 style="margin-bottom: 15px;">Type d'incident requis</h3>
+                        <p>Sélectionne le type d'incident</p>
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            
+            if (!severity) {
+                errorMessage.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
+                        <h3 style="margin-bottom: 15px;">Gravité requise</h3>
+                        <p>Sélectionne le niveau de gravité</p>
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            
+            if (!description || description.length < 20) {
+                errorMessage.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
+                        <h3 style="margin-bottom: 15px;">Description trop courte</h3>
+                        <p>La description doit contenir au moins 20 caractères</p>
+                        <p style="font-size: 0.9em; color: #666; margin-top: 10px;">Actuellement: ${description.length} caractères</p>
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            // VÉRIFICATION PHOTO OBLIGATOIRE
+            if (!facePhotoBlob) {
+                errorMessage.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">📸</div>
+                        <h3 style="margin-bottom: 15px;">Photo de visage obligatoire</h3>
+                        <p>Tu dois prendre une photo de ton visage pour envoyer le signalement.</p>
+                        <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                            🛡️ Rappel : Ton identité ne sera révélée QUE dans des cas très graves et après approbation.
+                        </p>
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            // Désactiver bouton
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Envoi en cours...';
+
+            // Utiliser FormData pour envoyer fichiers + données
+            const uploadData = new FormData();
+            uploadData.append('schoolCode', schoolCode.toUpperCase());
+            uploadData.append('reportType', reportType);
+            uploadData.append('severity', severity);
+            uploadData.append('description', description);
+            uploadData.append('location', formData.get('location') || 'Non précisé');
+            uploadData.append('isAnonymous', 'true');
+            
+            // Ajouter la photo du visage (OBLIGATOIRE)
+            uploadData.append('facePhoto', facePhotoBlob, 'face-photo.jpg');
+            
+            // Ajouter les informations personnelles optionnelles
+            const reporterName = formData.get('reporterName')?.trim();
+            const reporterClass = formData.get('reporterClass')?.trim();
+            if (reporterName) uploadData.append('reporterName', reporterName);
+            if (reporterClass) uploadData.append('reporterClass', reporterClass);
+
+            // Ajouter les fichiers
+            selectedFiles.forEach((file, index) => {
+                uploadData.append('attachments', file);
+            });
+
+            console.log('📤 Envoi du signalement avec', selectedFiles.length, 'fichier(s)');
+
+            try {
+                const response = await fetch('/api/reports/with-files', {
+                    method: 'POST',
+                    body: uploadData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    form.style.display = 'none';
+                    successMessage.innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 4em; margin-bottom: 20px;">✅</div>
+                            <h2 style="color: #28a745; margin-bottom: 20px;">Signalement Envoyé !</h2>
+                            <div style="background: white; padding: 25px; border-radius: 10px; margin: 20px 0;">
+                                <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>Code de suivi :</strong></p>
+                                <p style="font-family: monospace; font-size: 2em; color: #667eea; font-weight: bold; letter-spacing: 3px;">${result.reportCode}</p>
+                                <button onclick="copyCode('${result.reportCode}')" style="margin-top: 15px; padding: 10px 25px; background: #667eea; color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">
+                                    📋 Copier le Code
+                                </button>
+                            </div>
+                            <div style="background: #fff3cd; padding: 25px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                                <p style="font-size: 1.1em; margin-bottom: 15px; color: #856404;"><strong> 🔐 Code d'Accès Discussion :</strong></p>
+                                <p style="font-family: monospace; font-size: 2.5em; color: #856404; font-weight: bold; letter-spacing: 5px;">${result.accessCode}</p>
+                                <button onclick="copyCode('${result.accessCode}')" style="margin-top: 15px; padding: 10px 25px; background: #ffc107; color: #856404; border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">
+                                    📋 Copier le Code
+                                </button>
+                                <p style="font-size: 0.9em; color: #856404; margin-top: 15px; line-height: 1.6;">
+                                    ⚠️ <strong>IMPORTANT :</strong> Ce code te permet d'accéder à la discussion avec l'école.<br>
+                                    <strong>Conserve-le précieusement et ne le partage JAMAIS !</strong>
+                                </p>
+                            </div>
+                            <div style="background: #fff3cd; padding: 20px; border-radius: 10px; color: #856404; text-align: left;">
+                                <h4 style="margin-bottom: 10px;">📝 Prochaines étapes :</h4>
+                                <ol style="margin-left: 20px; line-height: 1.8;">
+                                    <li>Note bien ce code de suivi</li>
+                                    <li>Les administrateurs de ton école examineront ton signalement</li>
+                                    <li>Tu peux vérifier le statut avec ton code</li>
+                                    <li>Une réponse sera apportée rapidement</li>
+                                </ol>
+                            </div>
+                            <div style="margin-top: 25px;">
+                                <a href="/" style="display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 25px; font-weight: bold;">
+                                    🏠 Retour à l'Accueil
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    successMessage.style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    throw new Error(result.message || 'Erreur lors de l\'envoi');
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                
+                let errorMsg = error.message;
+                
+                // Messages d'erreur plus clairs
+                if (errorMsg.includes('Code d\'école invalide') || errorMsg.includes('Code invalide')) {
+                    errorMsg = `Le code "${schoolCode.toUpperCase()}" n'est pas valide. Vérifie avec ton école.`;
+                } else if (errorMsg.includes('Erreur lors de l\'envoi')) {
+                    errorMsg = 'Impossible d\'envoyer le signalement. Vérifie ta connexion internet.';
+                }
+                
+                errorMessage.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">❌</div>
+                        <h3 style="margin-bottom: 15px; color: #dc3545;">Signalement NON Envoyé</h3>
+                        <p style="font-size: 1.1em; margin: 20px 0;">${errorMsg}</p>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left;">
+                            <strong style="color: #333;">💡 Conseils :</strong>
+                            <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+                                <li>Vérifie que ton code d'école est correct</li>
+                                <li>Assure-toi d'avoir rempli tous les champs obligatoires</li>
+                                <li>Vérifie ta connexion internet</li>
+                            </ul>
+                        </div>
+                        <button onclick="location.reload()" style="margin-top: 15px; padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1em;">
+                            🔄 Réessayer
+                        </button>
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📤 Envoyer le Signalement';
+            }
+        });
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ Code copié : ' + code);
+            }).catch(() => {
+                alert('Code : ' + code + '\n\nCopie-le manuellement.');
+            });
+        }
+    </script>
+</body>
+</html>

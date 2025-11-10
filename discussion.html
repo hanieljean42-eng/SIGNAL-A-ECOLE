@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion avec l'École - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: #f0f4ff;
+            border-radius: 15px;
+        }
+
+        .chat-container {
+            background: white;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.admin {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.admin .message-bubble {
+            background: #e9ecef;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .message-sender {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .message-attachment {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .message-attachment img {
+            max-width: 200px;
+            border-radius: 8px;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .moderation-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .moderation-warning.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            resize: none;
+            font-family: inherit;
+            font-size: 1em;
+            max-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .attachment-btn {
+            background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            padding: 12px 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.2em;
+        }
+
+        .attachment-btn:hover {
+            background: #e9ecef;
+            transform: scale(1.1);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .proof-section {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .proof-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .proof-item {
+            position: relative;
+            display: inline-block;
+        }
+
+        .proof-item img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .proof-item .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .ai-check {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .report-code-input {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .report-code-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .report-code-input button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .system-message {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Retour à l'accueil</a>
+
+        <div class="header">
+            <h1>💬 Discussion avec l'École</h1>
+            <p>Dialogue sécurisé et modéré par IA</p>
+        </div>
+
+        <div id="reportCodeSection" class="report-code-input">
+            <h3 style="margin-bottom: 15px;">🔐 Accès Sécurisé à la Discussion</h3>
+            <p style="margin-bottom: 15px; color: #666;">Entre ton code de signalement et ton code d'accès personnel</p>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Code de Signalement</label>
+                <input type="text" id="reportCodeInput" placeholder="Ex: SF-1737688200-ABC12" style="margin-bottom: 10px;">
+                <small style="display: block; color: #666;">Le code que tu as reçu lors de ton signalement</small>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Code d'Accès Personnel</label>
+                <input type="password" id="accessCodeInput" placeholder="Entre ton code d'accès (6 chiffres)" maxlength="6">
+                <small style="display: block; color: #666; margin-top: 5px;">
+                    ⚠️ Si tu n'as pas de code, il a été envoyé après ton signalement. 
+                    <a href="#" onclick="showAccessCodeHelp(); return false;" style="color: #667eea;">Besoin d'aide ?</a>
+                </small>
+            </div>
+            
+            <button onclick="loadDiscussion()" style="width: 100%;">
+                🔓 Déverrouiller la Discussion
+            </button>
+        </div>
+        
+        <div id="accessCodeHelp" style="display: none; background: #fff3cd; padding: 20px; border-radius: 15px; margin-top: 20px; border-left: 4px solid #ffc107;">
+            <h4 style="color: #856404; margin-bottom: 10px;">💡 Comment obtenir mon code d'accès ?</h4>
+            <p style="color: #856404; line-height: 1.8;">
+                1. <strong>Après ton signalement</strong>, un code d'accès à 6 chiffres a été généré<br>
+                2. <strong>Si tu l'as perdu</strong>, retourne sur la page de suivi avec ton code de signalement<br>
+                3. <strong>Le code d'accès</strong> garantit que seul toi peut accéder à tes discussions<br>
+                4. <strong>Ne partage JAMAIS</strong> ce code avec quelqu'un d'autre
+            </p>
+            <button onclick="document.getElementById('accessCodeHelp').style.display='none'" style="margin-top: 10px; padding: 8px 20px; background: #ffc107; border: none; border-radius: 8px; cursor: pointer;">
+                J'ai compris
+            </button>
+        </div>
+
+        <div id="chatSection" style="display: none;">
+            <div class="chat-container">
+                <div class="messages-area" id="messagesArea">
+                    <div class="loading">⏳ Chargement des messages...</div>
+                </div>
+
+                <div class="input-area">
+                    <div id="moderationWarning" class="moderation-warning">
+                        <strong>⚠️ Message Bloqué par l'IA</strong>
+                        <p id="moderationReason"></p>
+                    </div>
+
+                    <div id="proofSection" class="proof-section" style="display: none;">
+                        <strong>📎 Preuves à Fournir</strong>
+                        <p style="font-size: 0.9em; margin: 5px 0;">Pour un signalement grave, veuillez joindre des preuves (photos, captures d'écran, documents)</p>
+                        <input type="file" id="proofInput" multiple accept="image/*,.pdf,.doc,.docx" style="margin-top: 10px;">
+                        <div id="proofPreview" class="proof-preview"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <button class="attachment-btn" onclick="document.getElementById('attachmentInput').click()" title="Joindre un fichier">
+                            📎
+                        </button>
+                        <input type="file" id="attachmentInput" style="display: none;" accept="image/*,.pdf" onchange="handleAttachment(this)">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="Écris ton message ici... (L'IA vérifie le contenu)"
+                            rows="2"
+                            onkeypress="handleKeyPress(event)"
+                        ></textarea>
+                        <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                            Envoyer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReportCode = null;
+        let currentAttachment = null;
+        let proofFiles = [];
+        let requireProof = false;
+        let accessToken = null;
+
+        // Afficher l'aide pour le code d'accès
+        function showAccessCodeHelp() {
+            document.getElementById('accessCodeHelp').style.display = 'block';
+        }
+
+        // Charger la discussion
+        async function loadDiscussion() {
+            const code = document.getElementById('reportCodeInput').value.trim();
+            const accessCode = document.getElementById('accessCodeInput').value.trim();
+            
+            if (!code) {
+                alert('⚠️ Entrez votre code de signalement');
+                return;
+            }
+
+            if (!accessCode || accessCode.length !== 6) {
+                alert('⚠️ Entrez votre code d\'accès à 6 chiffres');
+                return;
+            }
+
+            try {
+                // Vérifier le signalement et le code d'accès
+                const response = await fetch(`/api/discussions/verify-access`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reportCode: code, accessCode: accessCode })
+                });
+                
+                const result = await response.json();
+
+                if (result.success) {
+                    currentReportCode = code;
+                    accessToken = result.token;
+                    
+                    document.getElementById('reportCodeSection').style.display = 'none';
+                    document.getElementById('chatSection').style.display = 'block';
+                    
+                    // Vérifier si preuve requise pour signalement grave
+                    if (result.report.urgency === 'critique' || result.report.urgency === 'eleve') {
+                        requireProof = true;
+                        document.getElementById('proofSection').style.display = 'block';
+                    }
+                    
+                    loadMessages();
+                } else {
+                    alert('❌ ' + (result.message || 'Code de signalement ou code d\'accès incorrect'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // Charger les messages
+        async function loadMessages() {
+            try {
+                const response = await fetch(`/api/discussions/${currentReportCode}`);
+                const result = await response.json();
+
+                const messagesArea = document.getElementById('messagesArea');
+                
+                if (result.success && result.messages.length > 0) {
+                    messagesArea.innerHTML = '';
+                    result.messages.forEach(msg => displayMessage(msg));
+                } else {
+                    messagesArea.innerHTML = `
+                        <div class="system-message">
+                            💬 Aucun message pour le moment. Commence la conversation !
+                        </div>
+                    `;
+                }
+                
+                scrollToBottom();
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Afficher un message
+        function displayMessage(message) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.sender_type === 'admin' ? 'admin' : 'user'}`;
+            
+            const time = new Date(message.created_at).toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let attachmentHTML = '';
+            if (message.attachment) {
+                const attachment = JSON.parse(message.attachment);
+                if (attachment.type === 'image') {
+                    attachmentHTML = `
+                        <div class="message-attachment">
+                            <img src="${attachment.url}" alt="Image" onclick="window.open('${attachment.url}', '_blank')">
+                        </div>
+                    `;
+                } else {
+                    attachmentHTML = `
+                        <div class="message-attachment">
+                            📎 <a href="${attachment.url}" target="_blank">${attachment.name}</a>
+                        </div>
+                    `;
+                }
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    ${message.sender_type === 'admin' ? '<div class="message-sender">🏫 École</div>' : ''}
+                    ${message.is_ai_checked ? '<div class="ai-check">✓ Vérifié par IA</div>' : ''}
+                    <div class="message-text">${escapeHtml(message.message)}</div>
+                    ${attachmentHTML}
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+        }
+
+        // Modération IA
+        async function checkMessageWithAI(message) {
+            try {
+                const response = await fetch('/api/moderation/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Erreur IA:', error);
+                return { allowed: true }; // Par défaut, autoriser en cas d'erreur
+            }
+        }
+
+        // Envoyer un message
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
+
+            if (!message) return;
+
+            // Vérifier si preuve requise
+            if (requireProof && proofFiles.length === 0 && !currentAttachment) {
+                alert('⚠️ Pour un signalement grave, veuillez fournir des preuves (photos, documents)');
+                return;
+            }
+
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳ Vérification IA...';
+
+            // Vérification par l'IA
+            const aiCheck = await checkMessageWithAI(message);
+
+            if (!aiCheck.allowed) {
+                showModerationWarning(aiCheck.reason);
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Envoyer';
+                return;
+            }
+
+            sendBtn.textContent = '⏳ Envoi...';
+
+            try {
+                const formData = new FormData();
+                formData.append('reportCode', currentReportCode);
+                formData.append('message', message);
+                formData.append('senderType', 'user');
+
+                // Ajouter pièce jointe
+                if (currentAttachment) {
+                    formData.append('attachment', currentAttachment);
+                }
+
+                // Ajouter preuves
+                proofFiles.forEach((file, index) => {
+                    formData.append(`proof_${index}`, file);
+                });
+
+                const response = await fetch('/api/discussions/send', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    input.value = '';
+                    currentAttachment = null;
+                    proofFiles = [];
+                    document.getElementById('proofPreview').innerHTML = '';
+                    loadMessages();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur d\'envoi');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Envoyer';
+            }
+        }
+
+        // Afficher avertissement modération
+        function showModerationWarning(reason) {
+            const warning = document.getElementById('moderationWarning');
+            document.getElementById('moderationReason').textContent = reason;
+            warning.classList.add('show');
+            
+            setTimeout(() => {
+                warning.classList.remove('show');
+            }, 5000);
+        }
+
+        // Gérer pièce jointe
+        function handleAttachment(input) {
+            if (input.files && input.files[0]) {
+                currentAttachment = input.files[0];
+                alert('✅ Fichier joint : ' + currentAttachment.name);
+            }
+        }
+
+        // Gérer preuves
+        document.getElementById('proofInput')?.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            proofFiles = files;
+            
+            const preview = document.getElementById('proofPreview');
+            preview.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'proof-item';
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        item.innerHTML = `
+                            <img src="${e.target.result}">
+                            <button class="remove-btn" onclick="removeProof(${index})">×</button>
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    item.innerHTML = `
+                        <div style="padding: 10px; background: white; border-radius: 8px;">
+                            📄 ${file.name}
+                            <button class="remove-btn" onclick="removeProof(${index})">×</button>
+                        </div>
+                    `;
+                }
+                
+                preview.appendChild(item);
+            });
+        });
+
+        function removeProof(index) {
+            proofFiles.splice(index, 1);
+            document.getElementById('proofInput').value = '';
+            // Recharger preview
+        }
+
+        // Enter pour envoyer
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Scroll vers le bas
+        function scrollToBottom() {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Rafraîchir les messages toutes les 5 secondes
+        setInterval(() => {
+            if (currentReportCode) {
+                loadMessages();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

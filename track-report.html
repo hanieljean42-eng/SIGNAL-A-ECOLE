@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivre mon Signalement - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s;
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #result {
+            display: none;
+        }
+
+        #searchForm {
+            display: block;
+        }
+
+        .report-details {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .report-code {
+            font-family: monospace;
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .status-new {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .status-in-progress {
+            background: #0dcaf0;
+            color: #000;
+        }
+
+        .status-resolved {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-archived {
+            background: #6c757d;
+            color: white;
+        }
+
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid #667eea;
+        }
+
+        .info-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .report-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .report-content h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .responses-section {
+            margin-top: 30px;
+        }
+
+        .response-item {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .response-message {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .no-response {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #dc3545;
+        }
+
+        .timeline {
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex-grow: 1;
+        }
+
+        .timeline-date {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timeline-text {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px;
+            }
+
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .report-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Retour à l'accueil</a>
+        
+        <div class="header">
+            <h1>🔍 Suivre mon Signalement</h1>
+            <p>Entre ton code de suivi pour voir l'état de ton signalement</p>
+        </div>
+
+        <!-- Formulaire de recherche -->
+        <div class="card" id="searchForm">
+            <div class="info-box">
+                <h3 style="color: #0066cc; margin-bottom: 10px;">📋 Code de Suivi</h3>
+                <p>Utilise le code que tu as reçu après avoir envoyé ton signalement (ex: SF-1234567890-ABC12)</p>
+            </div>
+
+            <form id="trackForm">
+                <div class="form-group">
+                    <label>Code de Suivi</label>
+                    <input 
+                        type="text" 
+                        id="trackingCode" 
+                        placeholder="SF-XXXXXXXXXXXX-XXXXX"
+                        required
+                        pattern="SF-[0-9]+-[A-Z0-9]+"
+                    >
+                    <small style="color: #666; display: block; margin-top: 8px;">
+                        Le code commence toujours par "SF-"
+                    </small>
+                </div>
+
+                <button type="submit" class="btn" id="searchBtn">
+                    🔍 Chercher mon Signalement
+                </button>
+            </form>
+        </div>
+
+        <!-- Résultats -->
+        <div class="card" id="result">
+            <div id="reportData"></div>
+            
+            <button onclick="newSearch()" class="btn" style="background: #6c757d; margin-top: 20px;">
+                🔄 Chercher un Autre Signalement
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const trackForm = document.getElementById('trackForm');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchFormCard = document.getElementById('searchForm');
+        const resultCard = document.getElementById('result');
+        const reportData = document.getElementById('reportData');
+
+        trackForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const trackingCode = document.getElementById('trackingCode').value.trim().toUpperCase();
+
+            if (!trackingCode || !trackingCode.startsWith('SF-')) {
+                alert('❌ Code invalide. Le code doit commencer par "SF-"');
+                return;
+            }
+
+            searchBtn.disabled = true;
+            searchBtn.textContent = '⏳ Recherche...';
+
+            try {
+                const response = await fetch(`/api/reports/track/${trackingCode}`);
+                const result = await response.json();
+
+                if (result.success && result.report) {
+                    displayReport(result.report);
+                    searchFormCard.style.display = 'none';
+                    resultCard.style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    throw new Error(result.message || 'Signalement non trouvé');
+                }
+            } catch (error) {
+                alert('❌ Signalement non trouvé. Vérifie ton code et réessaie.');
+                console.error('Erreur:', error);
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = '🔍 Chercher mon Signalement';
+            }
+        });
+
+        function displayReport(report) {
+            const statusLabels = {
+                'new': { text: 'Nouveau', class: 'status-new', icon: '🆕' },
+                'in-progress': { text: 'En cours', class: 'status-in-progress', icon: '⏳' },
+                'resolved': { text: 'Résolu', class: 'status-resolved', icon: '✅' },
+                'archived': { text: 'Archivé', class: 'status-archived', icon: '📦' }
+            };
+
+            const categoryLabels = {
+                'harcelement': 'Harcèlement',
+                'violence': 'Violence',
+                'vol': 'Vol',
+                'discrimination': 'Discrimination',
+                'drogue': 'Drogue',
+                'fraude': 'Fraude',
+                'abus': 'Abus',
+                'administration': 'Administration',
+                'infrastructure': 'Infrastructure',
+                'securite': 'Sécurité',
+                'hygiene': 'Hygiène',
+                'autre': 'Autre'
+            };
+
+            const urgencyLabels = {
+                'faible': { text: 'Faible', color: '#28a745' },
+                'moyen': { text: 'Moyenne', color: '#ffc107' },
+                'eleve': { text: 'Élevée', color: '#ff6b6b' },
+                'critique': { text: 'Critique', color: '#dc3545' }
+            };
+
+            const status = statusLabels[report.status] || { text: report.status, class: 'status-new', icon: '📋' };
+            const urgency = urgencyLabels[report.urgency] || { text: report.urgency, color: '#666' };
+
+            const createdDate = new Date(report.createdAt).toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const updatedDate = new Date(report.updatedAt).toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let html = `
+                <div class="report-details">
+                    <div class="report-header">
+                        <div class="report-code">${report.id}</div>
+                        <span class="status-badge ${status.class}">${status.icon} ${status.text}</span>
+                    </div>
+
+                    <div class="report-info">
+                        <div class="info-item">
+                            <div class="info-label">École</div>
+                            <div class="info-value">${report.schoolName || 'Non spécifié'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Type</div>
+                            <div class="info-value">${categoryLabels[report.category] || report.category}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Gravité</div>
+                            <div class="info-value" style="color: ${urgency.color}">${urgency.text}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Lieu</div>
+                            <div class="info-value">${report.location || 'Non précisé'}</div>
+                        </div>
+                    </div>
+
+                    ${report.title ? `
+                    <div class="report-content">
+                        <h3>📝 Titre</h3>
+                        <p>${report.title}</p>
+                    </div>
+                    ` : ''}
+
+                    <div class="timeline">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">📅 Historique</h3>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">${createdDate}</div>
+                                <div class="timeline-text"><strong>Signalement créé</strong></div>
+                            </div>
+                        </div>
+                        ${report.updatedAt !== report.createdAt ? `
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">${updatedDate}</div>
+                                <div class="timeline-text"><strong>Dernière mise à jour</strong> - Statut: ${status.text}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="responses-section">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">💬 Réponses de l'Administration</h3>
+            `;
+
+            if (report.responses && report.responses.length > 0) {
+                report.responses.forEach(response => {
+                    const responseDate = new Date(response.createdAt).toLocaleString('fr-FR', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    html += `
+                        <div class="response-item">
+                            <div class="response-header">
+                                <span><strong>👤 ${response.adminName}</strong></span>
+                                <span>📅 ${responseDate}</span>
+                            </div>
+                            <div class="response-message">${response.message}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `
+                    <div class="no-response">
+                        <p>⏳ Aucune réponse pour le moment</p>
+                        <p style="margin-top: 10px; font-size: 0.9em;">L'administration examine ton signalement et te répondra bientôt.</p>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+
+            reportData.innerHTML = html;
+        }
+
+        function newSearch() {
+            document.getElementById('trackingCode').value = '';
+            searchFormCard.style.display = 'block';
+            resultCard.style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

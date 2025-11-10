@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+            margin-bottom: 15px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .info-section {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .strength-weak { color: #dc3545; }
+        .strength-medium { color: #ffc107; }
+        .strength-strong { color: #28a745; }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Retour à l'accueil</a>
+        
+        <div class="header">
+            <h1>👤 Créer un compte</h1>
+            <p>Rejoignez SpeakFree pour signaler et suivre vos préoccupations</p>
+        </div>
+
+        <div class="info-section">
+            <h3>🔐 Pourquoi créer un compte ?</h3>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+                <li>Suivez tous vos signalements en un seul endroit</li>
+                <li>Recevez des notifications sur l'évolution de vos cas</li>
+                <li>Communiquez directement avec l'administration</li>
+                <li>Gardez un historique de vos interactions</li>
+                <li>Vous pouvez toujours choisir de faire des signalements anonymes</li>
+            </ul>
+        </div>
+
+        <div class="form-container">
+            <form id="registerForm">
+                <!-- Informations de base -->
+                <div class="form-section">
+                    <h3>📝 Informations de base</h3>
+                    
+                    <div class="form-group">
+                        <label for="schoolChoice">Mode de sélection d'école <span class="required">*</span></label>
+                        <select id="schoolChoice" onchange="toggleSchoolInput()" required>
+                            <option value="">-- Choisissez une option --</option>
+                            <option value="existing">Sélectionner une école existante</option>
+                            <option value="new">Saisir le nom de mon école</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="existingSchoolGroup" style="display: none;">
+                        <label for="schoolId">École existante <span class="required">*</span></label>
+                        <select id="schoolId" name="schoolId">
+                            <option value="">-- Choisissez votre école --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="newSchoolGroup" style="display: none;">
+                        <label for="schoolName">Nom de votre école <span class="required">*</span></label>
+                        <input type="text" id="schoolName" name="schoolName" 
+                               placeholder="Ex: Lycée Jean Dupont, École Primaire Sainte-Marie..." 
+                               maxlength="100">
+                        <small style="color: #666;">Si votre école n'existe pas encore dans le système, elle sera créée automatiquement</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">Nom d'utilisateur <span class="required">*</span></label>
+                            <input type="text" id="username" name="username" required 
+                                   placeholder="Ex: jean_dupont" maxlength="30">
+                            <small style="color: #666;">3-30 caractères, lettres, chiffres et underscore uniquement</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required 
+                                   placeholder="votre.email@exemple.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fullName">Nom complet <span class="required">*</span></label>
+                        <input type="text" id="fullName" name="fullName" required 
+                               placeholder="Prénom et nom" maxlength="100">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userType">Vous êtes <span class="required">*</span></label>
+                            <select id="userType" name="userType" required>
+                                <option value="">-- Choisissez --</option>
+                                <option value="eleve">👨‍🎓 Élève</option>
+                                <option value="professeur">👨‍🏫 Professeur</option>
+                                <option value="parent">👪 Parent</option>
+                                <option value="personnel">🏢 Personnel administratif</option>
+                                <option value="autre">👤 Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="classLevel">Classe/Niveau (optionnel)</label>
+                            <input type="text" id="classLevel" name="classLevel" 
+                                   placeholder="Ex: 6ème, Terminale A, CP1..." maxlength="50">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Téléphone (optionnel)</label>
+                        <input type="tel" id="phone" name="phone" 
+                               placeholder="Ex: +225 01 02 03 04 05">
+                    </div>
+                </div>
+
+                <!-- Mot de passe -->
+                <div class="form-section">
+                    <h3>🔒 Sécurité</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Mot de passe <span class="required">*</span></label>
+                            <input type="password" id="password" name="password" required 
+                                   placeholder="Minimum 6 caractères" minlength="6" maxlength="100">
+                            <div id="passwordStrength" class="password-strength"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmer le mot de passe <span class="required">*</span></label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required 
+                                   placeholder="Retapez votre mot de passe">
+                            <div id="passwordMatch" style="margin-top: 5px; font-size: 0.9em;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <label style="display: flex; align-items: center; font-weight: normal; margin-bottom: 20px;">
+                        <input type="checkbox" id="acceptTerms" required style="width: auto; margin-right: 10px;">
+                        J'accepte les conditions d'utilisation et la politique de confidentialité <span class="required">*</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    🚀 Créer mon compte
+                </button>
+            </form>
+
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
+
+            <div class="login-link">
+                Vous avez déjà un compte ? <a href="/login">Se connecter</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Basculer entre sélection d'école existante et saisie de nouvelle école
+        function toggleSchoolInput() {
+            const schoolChoice = document.getElementById('schoolChoice').value;
+            const existingSchoolGroup = document.getElementById('existingSchoolGroup');
+            const newSchoolGroup = document.getElementById('newSchoolGroup');
+            const schoolId = document.getElementById('schoolId');
+            const schoolName = document.getElementById('schoolName');
+
+            // Réinitialiser les champs
+            schoolId.value = '';
+            schoolName.value = '';
+            schoolId.required = false;
+            schoolName.required = false;
+
+            if (schoolChoice === 'existing') {
+                existingSchoolGroup.style.display = 'block';
+                newSchoolGroup.style.display = 'none';
+                schoolId.required = true;
+                loadSchools(); // Charger les écoles existantes
+            } else if (schoolChoice === 'new') {
+                existingSchoolGroup.style.display = 'none';
+                newSchoolGroup.style.display = 'block';
+                schoolName.required = true;
+            } else {
+                existingSchoolGroup.style.display = 'none';
+                newSchoolGroup.style.display = 'none';
+            }
+        }
+
+        // Charger la liste des écoles
+        async function loadSchools() {
+            try {
+                const response = await fetch('/api/schools');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const schoolSelect = document.getElementById('schoolId');
+                    
+                    // Vider les options existantes (sauf la première)
+                    schoolSelect.innerHTML = '<option value="">-- Choisissez votre école --</option>';
+                    
+                    // Vérifier s'il y a un paramètre d'école dans l'URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const preselectedSchool = urlParams.get('school');
+                    
+                    result.schools.forEach(school => {
+                        const option = document.createElement('option');
+                        option.value = school.id;
+                        option.textContent = school.name;
+                        
+                        // Pré-sélectionner l'école si spécifiée
+                        if (preselectedSchool && school.id == preselectedSchool) {
+                            option.selected = true;
+                        }
+                        
+                        schoolSelect.appendChild(option);
+                    });
+                    
+                    // Si une école est pré-sélectionnée, forcer le mode existant
+                    if (preselectedSchool) {
+                        document.getElementById('schoolChoice').value = 'existing';
+                        document.getElementById('schoolChoice').disabled = true;
+                        toggleSchoolInput();
+                        
+                        schoolSelect.disabled = true;
+                        schoolSelect.style.backgroundColor = '#f8f9fa';
+                        
+                        // Ajouter un message informatif
+                        const existingInfo = schoolSelect.parentNode.querySelector('.admin-info');
+                        if (!existingInfo) {
+                            const infoDiv = document.createElement('div');
+                            infoDiv.className = 'admin-info';
+                            infoDiv.style.cssText = 'margin-top: 5px; font-size: 0.9em; color: #666;';
+                            infoDiv.innerHTML = '🔒 École pré-sélectionnée par votre administration';
+                            schoolSelect.parentNode.appendChild(infoDiv);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des écoles:', error);
+            }
+        }
+
+        // Vérification de la force du mot de passe
+        function checkPasswordStrength(password) {
+            const strengthDiv = document.getElementById('passwordStrength');
+            let strength = 0;
+            let feedback = '';
+
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            if (password.length === 0) {
+                strengthDiv.textContent = '';
+                return;
+            }
+
+            if (strength < 3) {
+                strengthDiv.className = 'password-strength strength-weak';
+                feedback = '❌ Mot de passe faible';
+            } else if (strength < 5) {
+                strengthDiv.className = 'password-strength strength-medium';
+                feedback = '⚠️ Mot de passe moyen';
+            } else {
+                strengthDiv.className = 'password-strength strength-strong';
+                feedback = '✅ Mot de passe fort';
+            }
+
+            strengthDiv.textContent = feedback;
+        }
+
+        // Vérification de la correspondance des mots de passe
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const matchDiv = document.getElementById('passwordMatch');
+
+            if (confirmPassword === '') {
+                matchDiv.textContent = '';
+                return;
+            }
+
+            if (password === confirmPassword) {
+                matchDiv.textContent = '✅ Les mots de passe correspondent';
+                matchDiv.style.color = '#28a745';
+            } else {
+                matchDiv.textContent = '❌ Les mots de passe ne correspondent pas';
+                matchDiv.style.color = '#dc3545';
+            }
+        }
+
+        // Événements
+        document.getElementById('password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+            checkPasswordMatch();
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+
+        // Validation du nom d'utilisateur
+        document.getElementById('username').addEventListener('input', function() {
+            const username = this.value;
+            const isValid = /^[a-zA-Z0-9_]+$/.test(username) && username.length >= 3;
+            
+            if (username.length > 0 && !isValid) {
+                this.style.borderColor = '#dc3545';
+            } else {
+                this.style.borderColor = '#e0e0e0';
+            }
+        });
+
+        // Soumission du formulaire
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Cacher les messages précédents
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            
+            // Vérifier que les mots de passe correspondent
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                errorMessage.innerHTML = '❌ Les mots de passe ne correspondent pas';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Désactiver le bouton
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Création en cours...';
+
+            // Déterminer le mode de sélection d'école
+            const schoolChoice = document.getElementById('schoolChoice').value;
+            let formData;
+
+            if (schoolChoice === 'existing') {
+                // École existante
+                const schoolId = document.getElementById('schoolId').value;
+                if (!schoolId) {
+                    errorMessage.innerHTML = '❌ Veuillez sélectionner une école existante';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                formData = {
+                    schoolId: parseInt(schoolId),
+                    username: document.getElementById('username').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    password: password,
+                    confirmPassword: confirmPassword,
+                    fullName: document.getElementById('fullName').value.trim(),
+                    userType: document.getElementById('userType').value,
+                    classLevel: document.getElementById('classLevel').value.trim() || null,
+                    phone: document.getElementById('phone').value.trim() || null
+                };
+            } else if (schoolChoice === 'new') {
+                // Nouvelle école
+                const schoolName = document.getElementById('schoolName').value.trim();
+                if (!schoolName || schoolName.length < 3) {
+                    errorMessage.innerHTML = '❌ Veuillez saisir un nom d\'école valide (minimum 3 caractères)';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                formData = {
+                    schoolName: schoolName,
+                    username: document.getElementById('username').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    password: password,
+                    confirmPassword: confirmPassword,
+                    fullName: document.getElementById('fullName').value.trim(),
+                    userType: document.getElementById('userType').value,
+                    classLevel: document.getElementById('classLevel').value.trim() || null,
+                    phone: document.getElementById('phone').value.trim() || null
+                };
+            } else {
+                errorMessage.innerHTML = '❌ Veuillez choisir un mode de sélection d\'école';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/users/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    successMessage.innerHTML = `
+                        <h4>✅ Compte créé avec succès !</h4>
+                        <p>Votre compte a été créé. Vous pouvez maintenant vous connecter.</p>
+                        <button class="btn btn-secondary" onclick="window.location.href='/login'" style="margin-top: 15px;">
+                            Se connecter maintenant
+                        </button>
+                    `;
+                    successMessage.style.display = 'block';
+                    
+                    // Réinitialiser le formulaire
+                    document.getElementById('registerForm').reset();
+                    document.getElementById('passwordStrength').textContent = '';
+                    document.getElementById('passwordMatch').textContent = '';
+                    
+                    successMessage.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    throw new Error(result.message || 'Erreur lors de la création du compte');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                errorMessage.innerHTML = `
+                    <h4>❌ Erreur lors de la création du compte</h4>
+                    <p>${error.message}</p>
+                `;
+                errorMessage.style.display = 'block';
+                errorMessage.scrollIntoView({ behavior: 'smooth' });
+            } finally {
+                // Réactiver le bouton
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Créer mon compte';
+            }
+        });
+
+        // Charger les écoles au démarrage
+        loadSchools();
+    </script>
+</body>
+</html>

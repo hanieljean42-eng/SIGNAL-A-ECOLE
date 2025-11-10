@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reprendre Conversation - Haniel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .access-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5em;
+            text-align: center;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            letter-spacing: 5px;
+            font-weight: bold;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="access-card">
+            <div class="header">
+                <h1>🤖 Reprendre Conversation</h1>
+                <p>Continuez votre dialogue avec Haniel</p>
+            </div>
+
+            <div class="info-box">
+                💡 <strong>Vous avez reçu un code à 6 chiffres</strong> lors de votre première conversation avec Haniel. Entrez-le ci-dessous pour reprendre votre conversation et voir les réponses de l'école.
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <form id="accessForm">
+                <div class="form-group">
+                    <label for="accessCode">🔑 Code d'Accès (6 chiffres)</label>
+                    <input 
+                        type="text" 
+                        id="accessCode" 
+                        class="code-input" 
+                        placeholder="123456"
+                        maxlength="6"
+                        pattern="[0-9]{6}"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    Accéder à ma Conversation
+                </button>
+            </form>
+
+            <a href="/" class="back-link">← Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('accessForm');
+        const codeInput = document.getElementById('accessCode');
+        const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Ne garder que les chiffres
+        codeInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const accessCode = codeInput.value.trim();
+
+            if (accessCode.length !== 6) {
+                showError('Le code doit contenir 6 chiffres');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Vérification...';
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/ai-chat/verify-access', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ accessCode: accessCode })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Stocker les informations dans localStorage
+                    localStorage.setItem('hanielSessionId', result.sessionId);
+                    localStorage.setItem('hanielAccessCode', accessCode);
+                    localStorage.setItem('hanielStatus', result.status);
+                    if (result.reportCode) {
+                        localStorage.setItem('hanielReportCode', result.reportCode);
+                    }
+
+                    // Rediriger vers la page de chat
+                    window.location.href = '/chat-ia?resume=true';
+                } else {
+                    showError(result.message || 'Code d\'accès invalide');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Accéder à ma Conversation';
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion. Veuillez réessayer.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Accéder à ma Conversation';
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = '❌ ' + message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

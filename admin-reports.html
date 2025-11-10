@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Signalements - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .filters {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-item label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .filter-item select,
+        .filter-item input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .reports-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .report-item {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .report-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .report-code {
+            font-family: monospace;
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-new {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .status-in-progress {
+            background: #0dcaf0;
+            color: #000;
+        }
+
+        .status-resolved {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-archived {
+            background: #6c757d;
+            color: white;
+        }
+
+        .urgency-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .urgency-faible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .urgency-moyen {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .urgency-eleve {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .urgency-critique {
+            background: #dc3545;
+            color: white;
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .urgent-badge {
+            background: #ff0000;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            animation: pulse-urgent 1.5s infinite;
+        }
+
+        @keyframes pulse-urgent {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .contact-info-badge {
+            background: #17a2b8;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border-radius: 20px;
+        }
+
+        .btn-view {
+            background: #17a2b8;
+        }
+
+        .btn-respond {
+            background: #28a745;
+        }
+
+        .btn-close {
+            background: #6c757d;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-reports {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-info {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📢 Gestion des Signalements</h1>
+                <p style="color: #666; margin-top: 5px;" id="schoolName">Chargement...</p>
+            </div>
+            <div class="header-actions">
+                <a href="/admin" class="btn btn-secondary">← Tableau de Bord</a>
+                <button onclick="logout()" class="btn btn-secondary">🚪 Déconnexion</button>
+            </div>
+        </div>
+
+        <!-- Statistiques rapides -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="statTotal">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="statNew">0</div>
+                <div class="stat-label">Nouveaux</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="statInProgress">0</div>
+                <div class="stat-label">En cours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="statResolved">0</div>
+                <div class="stat-label">Résolus</div>
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filters">
+            <div class="filters-grid">
+                <div class="filter-item">
+                    <label>Statut</label>
+                    <select id="filterStatus" onchange="loadReports()">
+                        <option value="">Tous</option>
+                        <option value="new">Nouveaux</option>
+                        <option value="in-progress">En cours</option>
+                        <option value="resolved">Résolus</option>
+                        <option value="archived">Archivés</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Gravité</label>
+                    <select id="filterUrgency" onchange="loadReports()">
+                        <option value="">Toutes</option>
+                        <option value="critique">Critique</option>
+                        <option value="eleve">Élevée</option>
+                        <option value="moyen">Moyenne</option>
+                        <option value="faible">Faible</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Catégorie</label>
+                    <select id="filterCategory" onchange="loadReports()">
+                        <option value="">Toutes</option>
+                        <option value="harcelement">Harcèlement</option>
+                        <option value="violence">Violence</option>
+                        <option value="vol">Vol</option>
+                        <option value="discrimination">Discrimination</option>
+                        <option value="drogue">Drogue</option>
+                        <option value="fraude">Fraude</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Recherche</label>
+                    <input type="text" id="filterSearch" placeholder="Code, titre..." onkeyup="loadReports()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des signalements -->
+        <div class="reports-container">
+            <div id="reportsContainer">
+                <div class="loading">⏳ Chargement des signalements...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de détails -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentAdmin = null;
+
+        // Vérifier l'authentification
+        function checkAuth() {
+            const adminData = localStorage.getItem('adminData');
+            const token = localStorage.getItem('adminToken');
+
+            if (!adminData || !token) {
+                alert('❌ Vous devez être connecté');
+                window.location.href = '/login';
+                return false;
+            }
+
+            currentAdmin = JSON.parse(adminData);
+            document.getElementById('schoolName').textContent = currentAdmin.schoolName || 'École';
+            return true;
+        }
+
+        // Charger les signalements
+        async function loadReports() {
+            if (!checkAuth()) return;
+
+            const token = localStorage.getItem('adminToken');
+            const status = document.getElementById('filterStatus').value;
+            const urgency = document.getElementById('filterUrgency').value;
+            const category = document.getElementById('filterCategory').value;
+            const search = document.getElementById('filterSearch').value;
+
+            const params = new URLSearchParams();
+            if (status) params.append('status', status);
+            if (urgency) params.append('urgency', urgency);
+            if (category) params.append('category', category);
+            if (search) params.append('search', search);
+
+            try {
+                const response = await fetch(`/api/reports/school/${currentAdmin.schoolId}?${params}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayReports(result.reports);
+                    updateStats(result.reports);
+                } else {
+                    document.getElementById('reportsContainer').innerHTML = `
+                        <div class="no-reports">
+                            <h3>❌ Erreur</h3>
+                            <p>${result.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('reportsContainer').innerHTML = `
+                    <div class="no-reports">
+                        <h3>❌ Erreur de connexion</h3>
+                        <p>Impossible de charger les signalements</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Afficher les signalements
+        function displayReports(reports) {
+            const container = document.getElementById('reportsContainer');
+
+            if (reports.length === 0) {
+                container.innerHTML = `
+                    <div class="no-reports">
+                        <h3>📭 Aucun signalement</h3>
+                        <p>Aucun signalement ne correspond à vos critères</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const statusLabels = {
+                'new': { text: 'Nouveau', class: 'status-new' },
+                'in-progress': { text: 'En cours', class: 'status-in-progress' },
+                'resolved': { text: 'Résolu', class: 'status-resolved' },
+                'archived': { text: 'Archivé', class: 'status-archived' }
+            };
+
+            const urgencyLabels = {
+                'faible': { text: 'Faible', class: 'urgency-faible' },
+                'moyen': { text: 'Moyenne', class: 'urgency-moyen' },
+                'eleve': { text: 'Élevée', class: 'urgency-eleve' },
+                'critique': { text: 'Critique', class: 'urgency-critique' }
+            };
+
+            const categoryLabels = {
+                'harcelement': 'Harcèlement',
+                'violence': 'Violence',
+                'vol': 'Vol',
+                'discrimination': 'Discrimination',
+                'drogue': 'Drogue',
+                'fraude': 'Fraude',
+                'abus': 'Abus',
+                'autre': 'Autre'
+            };
+
+            let html = '';
+
+            // Trier les signalements : critiques en premier
+            reports.sort((a, b) => {
+                if (a.urgency === 'critique' && b.urgency !== 'critique') return -1;
+                if (a.urgency !== 'critique' && b.urgency === 'critique') return 1;
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+
+            reports.forEach(report => {
+                const status = statusLabels[report.status] || { text: report.status, class: 'status-new' };
+                const urgency = urgencyLabels[report.urgency] || { text: report.urgency, class: 'urgency-faible' };
+                const createdDate = new Date(report.created_at).toLocaleString('fr-FR');
+                const isUrgent = report.urgency === 'critique' || report.isUrgent || report.priority === 'critical';
+                const hasContactInfo = report.contactInfo || (!report.is_anonymous && report.user_id);
+
+                html += `
+                    <div class="report-item" style="${isUrgent ? 'border: 3px solid #dc3545; background: #fff5f5;' : ''}">
+                        <div class="report-header">
+                            <div>
+                                <div class="report-code">${report.id}</div>
+                                ${isUrgent ? '<span class="urgent-badge">🚨 URGENT</span>' : ''}
+                                ${hasContactInfo ? '<span class="contact-info-badge">📞 Contact disponible</span>' : ''}
+                            </div>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <span class="status-badge ${status.class}">${status.text}</span>
+                                <span class="urgency-badge ${urgency.class}">${urgency.text}</span>
+                            </div>
+                        </div>
+
+                        ${isUrgent ? `
+                        <div style="background: #f8d7da; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #dc3545;">
+                            <strong style="color: #721c24;">⚠️ Signalement Prioritaire - Intervention rapide requise</strong>
+                        </div>
+                        ` : ''}
+
+                        <div class="report-info">
+                            <div>
+                                <div class="info-label">Type</div>
+                                <div class="info-value">${categoryLabels[report.category] || report.category}</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Lieu</div>
+                                <div class="info-value">${report.location || 'Non précisé'}</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Date création</div>
+                                <div class="info-value">${createdDate}</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Réponses</div>
+                                <div class="info-value">${report.response_count || 0}</div>
+                            </div>
+                        </div>
+
+                        <div class="report-actions">
+                            <button class="btn btn-sm btn-view" onclick="viewDetails('${report.id}')">
+                                👁️ Voir ${isUrgent ? 'Détails' : ''}
+                            </button>
+                            ${hasContactInfo ? `
+                            <button class="btn btn-sm" style="background: #17a2b8;" onclick="showContactInfo('${report.id}')">
+                                📞 Contact
+                            </button>
+                            ` : ''}
+                            ${report.status === 'new' ? `
+                            <button class="btn btn-sm btn-respond" onclick="changeStatus('${report.id}', 'in-progress')">
+                                ⏳ Prendre en charge ${isUrgent ? 'URGENT' : ''}
+                            </button>
+                            ` : ''}
+                            ${report.status === 'in-progress' ? `
+                            <button class="btn btn-sm btn-respond" onclick="changeStatus('${report.id}', 'resolved')">
+                                ✅ Marquer résolu
+                            </button>
+                            ` : ''}
+                            <button class="btn btn-sm btn-delete" onclick="deleteReport('${report.id}', event)">
+                                🗑️ Supprimer
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Mettre à jour les stats
+        function updateStats(reports) {
+            const stats = {
+                total: reports.length,
+                new: reports.filter(r => r.status === 'new').length,
+                inProgress: reports.filter(r => r.status === 'in-progress').length,
+                resolved: reports.filter(r => r.status === 'resolved').length
+            };
+
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statNew').textContent = stats.new;
+            document.getElementById('statInProgress').textContent = stats.inProgress;
+            document.getElementById('statResolved').textContent = stats.resolved;
+        }
+
+        // Voir les détails
+        async function viewDetails(reportId) {
+            const token = localStorage.getItem('adminToken');
+
+            try {
+                const response = await fetch(`/api/reports/${reportId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.report) {
+                    showDetailsModal(result.report);
+                } else {
+                    alert('❌ Impossible de charger les détails');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // Afficher la modal
+        function showDetailsModal(report) {
+            const categoryLabels = {
+                'harcelement': 'Harcèlement',
+                'violence': 'Violence',
+                'vol': 'Vol',
+                'discrimination': 'Discrimination',
+                'drogue': 'Drogue',
+                'autre': 'Autre'
+            };
+
+            // Parser les pièces jointes si elles existent
+            let attachments = [];
+            if (report.attachments) {
+                try {
+                    attachments = typeof report.attachments === 'string' 
+                        ? JSON.parse(report.attachments) 
+                        : report.attachments;
+                } catch (e) {
+                    console.error('Erreur parsing attachments:', e);
+                }
+            }
+
+            let html = `
+                <h2 style="color: #667eea; margin-bottom: 20px;">📋 Détails du Signalement</h2>
+                <p style="font-family: monospace; color: #666; margin-bottom: 20px;">${report.id}</p>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">📝 Titre</h3>
+                    <p>${report.title || 'Sans titre'}</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">💬 Message</h3>
+                    <p style="line-height: 1.6;">${report.message}</p>
+                </div>
+            `;
+
+            // Afficher les pièces jointes si elles existent
+            if (attachments && attachments.length > 0) {
+                html += `
+                    <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                        <h3 style="color: #333; margin-bottom: 15px;">📎 Pièces jointes (${attachments.length})</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                `;
+
+                attachments.forEach((file, index) => {
+                    const isImage = file.mimetype && file.mimetype.startsWith('image/');
+                    const isVideo = file.mimetype && file.mimetype.startsWith('video/');
+                    
+                    if (isImage) {
+                        html += `
+                            <div style="border: 2px solid #667eea; border-radius: 10px; overflow: hidden; background: white;">
+                                <img src="${file.path}" alt="${file.originalname}" 
+                                     style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;"
+                                     onclick="window.open('${file.path}', '_blank')">
+                                <div style="padding: 10px; font-size: 0.85em; color: #666; text-align: center;">
+                                    📷 ${file.originalname}
+                                </div>
+                            </div>
+                        `;
+                    } else if (isVideo) {
+                        html += `
+                            <div style="border: 2px solid #667eea; border-radius: 10px; overflow: hidden; background: white;">
+                                <video controls controlsList="nodownload" style="width: 100%; max-height: 400px; background: #000;">
+                                    <source src="${file.path}" type="${file.mimetype}">
+                                    Votre navigateur ne supporte pas la lecture vidéo.
+                                </video>
+                                <div style="padding: 10px; font-size: 0.85em; color: #666; text-align: center;">
+                                    🎥 ${file.originalname}
+                                    <br>
+                                    <a href="${file.path}" target="_blank" style="color: #667eea; text-decoration: none; font-size: 0.9em;">
+                                        🔗 Ouvrir dans un nouvel onglet
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div style="border: 2px solid #667eea; border-radius: 10px; padding: 15px; background: white; text-align: center;">
+                                <div style="font-size: 3em; margin-bottom: 10px;">📄</div>
+                                <a href="${file.path}" target="_blank" style="color: #667eea; text-decoration: none; font-size: 0.85em;">
+                                    ${file.originalname}
+                                </a>
+                            </div>
+                        `;
+                    }
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <strong>Type:</strong> ${categoryLabels[report.category] || report.category}
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <strong>Gravité:</strong> ${report.urgency}
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <strong>Lieu:</strong> ${report.location || 'Non précisé'}
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <strong>Statut:</strong> ${report.status}
+                    </div>
+                </div>
+
+                <button class="btn" onclick="closeModal()" style="width: 100%;">Fermer</button>
+            `;
+
+            document.getElementById('modalContent').innerHTML = html;
+            document.getElementById('detailsModal').style.display = 'block';
+        }
+
+        // Changer le statut
+        async function changeStatus(reportId, newStatus) {
+            const token = localStorage.getItem('adminToken');
+
+            try {
+                const response = await fetch(`/api/reports/${reportId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Statut mis à jour');
+                    loadReports();
+                } else {
+                    alert('❌ Erreur: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // Afficher les informations de contact
+        async function showContactInfo(reportId) {
+            const token = localStorage.getItem('adminToken');
+
+            try {
+                const response = await fetch(`/api/reports/${reportId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.report) {
+                    const report = result.report;
+                    let contactHTML = `
+                        <h2 style="color: #17a2b8; margin-bottom: 20px;">📞 Informations de Contact</h2>
+                        <p style="font-family: monospace; color: #666; margin-bottom: 20px;">${report.id}</p>
+                    `;
+
+                    if (report.contactInfo) {
+                        const contact = typeof report.contactInfo === 'string' ? JSON.parse(report.contactInfo) : report.contactInfo;
+                        
+                        contactHTML += `
+                            <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #17a2b8;">
+                                <h3 style="color: #0066cc; margin-bottom: 15px;">👤 Coordonnées Fournies</h3>
+                                ${contact.name ? `<p><strong>Nom/Prénom :</strong> ${contact.name}</p>` : ''}
+                                ${contact.phone ? `<p><strong>Téléphone :</strong> <a href="tel:${contact.phone}" style="color: #0066cc;">${contact.phone}</a></p>` : ''}
+                                ${contact.email ? `<p><strong>Email :</strong> <a href="mailto:${contact.email}" style="color: #0066cc;">${contact.email}</a></p>` : ''}
+                                ${contact.contactTime ? `<p><strong>Meilleur moment :</strong> ${contact.contactTime}</p>` : ''}
+                            </div>
+                            <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                                <strong style="color: #856404;">⚠️ Confidentialité :</strong>
+                                <p style="color: #856404; margin-top: 10px;">Ces informations sont strictement confidentielles. Utilisez-les uniquement pour intervenir dans cette situation.</p>
+                            </div>
+                        `;
+                    } else if (!report.is_anonymous && report.user_id) {
+                        contactHTML += `
+                            <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #17a2b8;">
+                                <h3 style="color: #0066cc; margin-bottom: 15px;">👤 Utilisateur Connecté</h3>
+                                <p>Ce signalement a été fait par un utilisateur connecté.</p>
+                                <p><strong>ID Utilisateur :</strong> ${report.user_id}</p>
+                            </div>
+                        `;
+                    } else {
+                        contactHTML += `
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                                <p style="color: #666;">🔒 Aucune information de contact disponible</p>
+                                <p style="color: #666; margin-top: 10px;">Ce signalement est complètement anonyme.</p>
+                            </div>
+                        `;
+                    }
+
+                    contactHTML += `
+                        <button class="btn" onclick="closeModal()" style="width: 100%;">Fermer</button>
+                    `;
+
+                    document.getElementById('modalContent').innerHTML = contactHTML;
+                    document.getElementById('detailsModal').style.display = 'block';
+                } else {
+                    alert('❌ Impossible de charger les informations');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur de connexion');
+            }
+        }
+
+        // Fermer la modal
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        // Supprimer un signalement
+        async function deleteReport(reportId, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            if (!confirm(`⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment supprimer ce signalement ${reportId} ?\n\nCette action est IRRÉVERSIBLE et supprimera :\n- Le signalement\n- Toutes les réponses associées\n- Toutes les discussions liées\n- Tous les messages\n\nÊtes-vous sûr(e) ?`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('adminToken');
+
+            try {
+                const response = await fetch(`/api/reports/${reportId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Signalement supprimé avec succès');
+                    loadReports();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la suppression');
+            }
+        }
+
+        // Déconnexion
+        function logout() {
+            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+                localStorage.removeItem('adminData');
+                localStorage.removeItem('adminToken');
+                window.location.href = '/login';
+            }
+        }
+
+        // Initialisation
+        if (checkAuth()) {
+            loadReports();
+        }
+    </script>
+</body>
+</html>

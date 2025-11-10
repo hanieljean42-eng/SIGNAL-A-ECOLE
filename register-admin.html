@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Administrateur - SpeakFree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message, .error-message {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .school-search {
+            position: relative;
+        }
+
+        .school-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .school-result-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+            transition: background-color 0.3s;
+        }
+
+        .school-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .school-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+
+        .warning {
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #dc3545;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Retour à l'accueil</a>
+        
+        <div class="header">
+            <h1>👨‍💼 Inscription Administrateur</h1>
+            <p>Créez votre compte administrateur pour gérer votre établissement</p>
+        </div>
+
+        <div class="form-container">
+            <div class="info-section">
+                <strong>🔐 Accès Administrateur SpeakFree</strong><br>
+                Cette inscription est réservée aux responsables d'établissements scolaires qui souhaitent gérer les signalements de leur école.
+                <br><br>
+                <div style="background: #d4edda; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                    <strong>✅ Après inscription, vous pourrez :</strong>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Accéder au tableau de bord administrateur</li>
+                        <li>Gérer tous les signalements de votre école</li>
+                        <li>Répondre de manière anonyme aux signaleurs</li>
+                        <li>Gérer les utilisateurs de votre établissement</li>
+                        <li>Consulter les statistiques détaillées</li>
+                        <li>Révéler l'identité en cas de situation grave</li>
+                    </ul>
+                </div>
+            </div>
+
+            <form id="adminRegistrationForm">
+                <!-- Sélection de l'école -->
+                <div class="form-section">
+                    <h3>🏫 Votre Établissement</h3>
+                    
+                    <div class="highlight">
+                        <strong>📋 Important :</strong> Vous devez être associé à une école déjà enregistrée dans SpeakFree. 
+                        Si votre école n'est pas encore inscrite, veuillez d'abord 
+                        <a href="register-school.html" style="color: #667eea; font-weight: bold;">créer votre établissement</a>.
+                    </div>
+
+                    <div class="form-group school-search">
+                        <label for="schoolSearch">Rechercher votre école <span class="required">*</span></label>
+                        <input type="text" id="schoolSearch" name="schoolSearch" required 
+                               placeholder="Tapez le nom de votre école ou son code..."
+                               onkeyup="searchSchools()" autocomplete="off">
+                        <div id="schoolResults" class="school-results"></div>
+                        <input type="hidden" id="selectedSchoolId" name="schoolId" required>
+                    </div>
+
+                    <div id="selectedSchoolInfo" style="display: none; background: #e7f3ff; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                        <h4 style="color: #0066cc; margin-bottom: 10px;">École sélectionnée :</h4>
+                        <div id="schoolInfoDisplay"></div>
+                    </div>
+                </div>
+
+                <!-- Informations personnelles -->
+                <div class="form-section">
+                    <h3>👤 Vos Informations Personnelles</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">Prénom <span class="required">*</span></label>
+                            <input type="text" id="firstName" name="firstName" required 
+                                   placeholder="Votre prénom">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lastName">Nom de famille <span class="required">*</span></label>
+                            <input type="text" id="lastName" name="lastName" required 
+                                   placeholder="Votre nom de famille">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="position">Fonction dans l'établissement <span class="required">*</span></label>
+                        <select id="position" name="position" required>
+                            <option value="">-- Sélectionnez votre fonction --</option>
+                            <option value="directeur">Directeur/Directrice</option>
+                            <option value="proviseur">Proviseur</option>
+                            <option value="principal">Principal(e)</option>
+                            <option value="adjoint">Directeur/Directrice Adjoint(e)</option>
+                            <option value="surveillant_general">Surveillant(e) Général(e)</option>
+                            <option value="conseiller_education">Conseiller/Conseillère d'Éducation</option>
+                            <option value="responsable_discipline">Responsable Discipline</option>
+                            <option value="coordinateur">Coordinateur/Coordinatrice</option>
+                            <option value="autre">Autre fonction administrative</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email professionnel <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required 
+                                   placeholder="votre.email@ecole.ci">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Téléphone <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" required 
+                                   placeholder="+225 XX XX XX XX XX">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations de connexion -->
+                <div class="form-section">
+                    <h3>🔐 Informations de Connexion</h3>
+                    
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur <span class="required">*</span></label>
+                        <input type="text" id="username" name="username" required 
+                               placeholder="Choisissez un nom d'utilisateur unique"
+                               onblur="checkUsernameAvailability()">
+                        <small id="usernameStatus" style="margin-top: 5px; display: block;"></small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Mot de passe <span class="required">*</span></label>
+                            <input type="password" id="password" name="password" required 
+                                   placeholder="Minimum 8 caractères"
+                                   onkeyup="checkPasswordStrength()">
+                            <small id="passwordStrength" style="margin-top: 5px; display: block;"></small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmer le mot de passe <span class="required">*</span></label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required 
+                                   placeholder="Répétez votre mot de passe"
+                                   onkeyup="checkPasswordMatch()">
+                            <small id="passwordMatch" style="margin-top: 5px; display: block;"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Justification -->
+                <div class="form-section">
+                    <h3>📝 Justification de la Demande</h3>
+                    
+                    <div class="form-group">
+                        <label for="justification">Pourquoi demandez-vous l'accès administrateur ? <span class="required">*</span></label>
+                        <textarea id="justification" name="justification" rows="4" required 
+                                  placeholder="Expliquez brièvement votre rôle dans l'établissement et pourquoi vous avez besoin d'un accès administrateur..."></textarea>
+                        <small style="color: #666;">Cette justification sera examinée lors de la validation de votre demande.</small>
+                    </div>
+                </div>
+
+                <!-- Conditions -->
+                <div class="warning">
+                    <h4 style="color: #721c24; margin-bottom: 15px;">⚠️ Conditions d'Utilisation</h4>
+                    <div style="max-height: 150px; overflow-y: auto; background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <p><strong>En tant qu'administrateur, vous vous engagez à :</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Traiter tous les signalements de manière confidentielle et professionnelle</li>
+                            <li>Respecter l'anonymat des signaleurs sauf cas exceptionnels prévus par la loi</li>
+                            <li>Ne pas utiliser les informations à des fins personnelles ou malveillantes</li>
+                            <li>Répondre dans des délais raisonnables aux signalements</li>
+                            <li>Maintenir la sécurité de votre compte (mot de passe, accès)</li>
+                            <li>Signaler tout usage abusif ou tentative de piratage</li>
+                            <li>Respecter la législation ivoirienne en vigueur</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="acceptTerms" name="acceptTerms" required style="margin-right: 10px; width: auto;">
+                            <span>J'accepte les conditions d'utilisation et je m'engage à respecter mes responsabilités d'administrateur <span class="required">*</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    📤 Soumettre la demande d'inscription
+                </button>
+            </form>
+
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        let schoolsData = [];
+        let selectedSchool = null;
+
+        // Charger les écoles disponibles
+        async function loadSchools() {
+            try {
+                const response = await fetch('/api/schools');
+                const result = await response.json();
+                if (result.success) {
+                    schoolsData = result.schools;
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des écoles:', error);
+            }
+        }
+
+        // Rechercher les écoles
+        function searchSchools() {
+            const searchTerm = document.getElementById('schoolSearch').value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('schoolResults');
+            
+            if (searchTerm.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            const filteredSchools = schoolsData.filter(school => 
+                school.name.toLowerCase().includes(searchTerm) ||
+                (school.school_code && school.school_code.toLowerCase().includes(searchTerm)) ||
+                (school.city && school.city.toLowerCase().includes(searchTerm))
+            );
+
+            if (filteredSchools.length === 0) {
+                resultsDiv.innerHTML = '<div class="school-result-item">Aucune école trouvée</div>';
+                resultsDiv.style.display = 'block';
+                return;
+            }
+
+            resultsDiv.innerHTML = filteredSchools.slice(0, 5).map(school => `
+                <div class="school-result-item" onclick="selectSchool(${school.id}, '${school.name}', '${school.school_code}', '${school.city || ''}', '${school.school_type || ''}')">
+                    <strong>${school.name}</strong>
+                    ${school.school_code ? `<span style="background: #f0f8ff; color: #0066cc; padding: 2px 6px; border-radius: 10px; font-size: 0.8em; margin-left: 10px;">${school.school_code}</span>` : ''}
+                    ${school.city ? `<br><small style="color: #666;">${school.city}</small>` : ''}
+                </div>
+            `).join('');
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        // Sélectionner une école
+        function selectSchool(id, name, code, city, type) {
+            selectedSchool = { id, name, code, city, type };
+            
+            document.getElementById('schoolSearch').value = name;
+            document.getElementById('selectedSchoolId').value = id;
+            document.getElementById('schoolResults').style.display = 'none';
+            
+            // Afficher les informations de l'école sélectionnée
+            const infoDiv = document.getElementById('schoolInfoDisplay');
+            infoDiv.innerHTML = `
+                <p><strong>Nom :</strong> ${name}</p>
+                ${code ? `<p><strong>Code :</strong> <span style="font-family: monospace; background: #f0f8ff; padding: 2px 6px; border-radius: 5px;">${code}</span></p>` : ''}
+                ${city ? `<p><strong>Ville :</strong> ${city}</p>` : ''}
+                ${type ? `<p><strong>Type :</strong> ${getSchoolTypeLabel(type)}</p>` : ''}
+            `;
+            
+            document.getElementById('selectedSchoolInfo').style.display = 'block';
+        }
+
+        // Obtenir le libellé du type d'école
+        function getSchoolTypeLabel(type) {
+            const labels = {
+                'public': 'Public',
+                'prive': 'Privé',
+                'confessionnel': 'Confessionnel',
+                'international': 'International'
+            };
+            return labels[type] || type;
+        }
+
+        // Vérifier la disponibilité du nom d'utilisateur
+        async function checkUsernameAvailability() {
+            const username = document.getElementById('username').value.trim();
+            const statusDiv = document.getElementById('usernameStatus');
+            
+            if (username.length < 3) {
+                statusDiv.textContent = 'Le nom d\'utilisateur doit contenir au moins 3 caractères';
+                statusDiv.style.color = '#dc3545';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
+                const result = await response.json();
+                
+                if (result.available) {
+                    statusDiv.textContent = '✅ Nom d\'utilisateur disponible';
+                    statusDiv.style.color = '#28a745';
+                } else {
+                    statusDiv.textContent = '❌ Ce nom d\'utilisateur est déjà pris';
+                    statusDiv.style.color = '#dc3545';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Erreur lors de la vérification';
+                statusDiv.style.color = '#dc3545';
+            }
+        }
+
+        // Vérifier la force du mot de passe
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthDiv.textContent = '';
+                return;
+            }
+
+            let strength = 0;
+            let feedback = [];
+
+            if (password.length >= 8) strength++;
+            else feedback.push('au moins 8 caractères');
+
+            if (/[a-z]/.test(password)) strength++;
+            else feedback.push('une minuscule');
+
+            if (/[A-Z]/.test(password)) strength++;
+            else feedback.push('une majuscule');
+
+            if (/[0-9]/.test(password)) strength++;
+            else feedback.push('un chiffre');
+
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            else feedback.push('un caractère spécial');
+
+            const levels = ['Très faible', 'Faible', 'Moyen', 'Fort', 'Très fort'];
+            const colors = ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#20c997'];
+
+            strengthDiv.textContent = `Force: ${levels[strength]} ${feedback.length > 0 ? '(Manque: ' + feedback.join(', ') + ')' : ''}`;
+            strengthDiv.style.color = colors[strength];
+        }
+
+        // Vérifier la correspondance des mots de passe
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const matchDiv = document.getElementById('passwordMatch');
+            
+            if (confirmPassword.length === 0) {
+                matchDiv.textContent = '';
+                return;
+            }
+
+            if (password === confirmPassword) {
+                matchDiv.textContent = '✅ Les mots de passe correspondent';
+                matchDiv.style.color = '#28a745';
+            } else {
+                matchDiv.textContent = '❌ Les mots de passe ne correspondent pas';
+                matchDiv.style.color = '#dc3545';
+            }
+        }
+
+        // Masquer les résultats quand on clique ailleurs
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.school-search')) {
+                document.getElementById('schoolResults').style.display = 'none';
+            }
+        });
+
+        // Soumission du formulaire
+        document.getElementById('adminRegistrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Réinitialiser les messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Désactiver le bouton
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Envoi en cours...';
+
+            // Validation côté client
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                errorMessage.innerHTML = '<h4>❌ Erreur de validation</h4><p>Les mots de passe ne correspondent pas.</p>';
+                errorMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📤 Soumettre la demande d\'inscription';
+                return;
+            }
+
+            if (!selectedSchool) {
+                errorMessage.innerHTML = '<h4>❌ Erreur de validation</h4><p>Veuillez sélectionner une école.</p>';
+                errorMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📤 Soumettre la demande d\'inscription';
+                return;
+            }
+
+            // Préparer les données
+            const formData = {
+                schoolId: selectedSchool.id,
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                position: document.getElementById('position').value,
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                username: document.getElementById('username').value.trim(),
+                password: password,
+                justification: document.getElementById('justification').value.trim()
+            };
+
+            try {
+                const response = await fetch('/api/auth/register-admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    successMessage.innerHTML = `
+                        <h4>✅ Demande d'inscription soumise avec succès !</h4>
+                        <p><strong>Numéro de demande :</strong> ${result.requestId}</p>
+                        <p>Votre demande d'accès administrateur a été enregistrée et sera examinée par notre équipe.</p>
+                        <p><strong>Prochaines étapes :</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Vérification de votre identité et de votre fonction</li>
+                            <li>Validation par l'équipe SpeakFree</li>
+                            <li>Notification par email de l'activation de votre compte</li>
+                        </ul>
+                        <p><strong>Délai :</strong> 2-5 jours ouvrables</p>
+                        <div style="margin-top: 15px; text-align: center;">
+                            <button class="btn" onclick="window.location.href='index.html'" style="display: inline-block; width: auto; padding: 10px 20px;">
+                                🏠 Retour à l'accueil
+                            </button>
+                        </div>
+                    `;
+                    successMessage.style.display = 'block';
+                    
+                    // Réinitialiser le formulaire
+                    document.getElementById('adminRegistrationForm').reset();
+                    document.getElementById('selectedSchoolInfo').style.display = 'none';
+                    selectedSchool = null;
+                } else {
+                    throw new Error(result.message || 'Erreur lors de la soumission');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                errorMessage.innerHTML = `
+                    <h4>❌ Erreur lors de la soumission</h4>
+                    <p>${error.message}</p>
+                    <p>Veuillez vérifier vos informations et réessayer.</p>
+                `;
+                errorMessage.style.display = 'block';
+                errorMessage.scrollIntoView({ behavior: 'smooth' });
+            } finally {
+                // Réactiver le bouton
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📤 Soumettre la demande d\'inscription';
+            }
+        });
+
+        // Initialisation
+        loadSchools();
+    </script>
+</body>
+</html>
